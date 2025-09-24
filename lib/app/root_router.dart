@@ -1,0 +1,122 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+// ⬇️ NEW: cần kiểu Session + 2 VM để gọi clearAll()
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:moodlyy_application/features/mood/vm/mood_vm.dart';
+import 'package:moodlyy_application/features/calendar/vm/calendar_vm.dart';
+
+import 'package:moodlyy_application/features/mood/presentation/mood_edit_page.dart';
+import 'package:moodlyy_application/features/auth/presentation/pages/login_page.dart';
+import 'package:moodlyy_application/features/main_shell/presentation/app_shell.dart';
+import 'package:moodlyy_application/features/auth/data/auth_service.dart';
+import 'package:moodlyy_application/features/onboarding/presentation/intro_splash_page.dart';
+
+// ✅ Helper: Stream -> Listenable để dùng cho refreshListenable
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    _sub = stream.listen((_) => notifyListeners());
+  }
+  late final StreamSubscription _sub;
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}
+
+// ⬇️ Listener dọn cache khi session đổi
+class AuthSessionListener extends StatefulWidget {
+  final Widget child;
+  const AuthSessionListener({super.key, required this.child});
+
+  @override
+  State<AuthSessionListener> createState() => _AuthSessionListenerState();
+}
+
+class _AuthSessionListenerState extends State<AuthSessionListener> {
+  Session? _last;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final current = context.watch<Session?>();
+
+    if (!identical(current, _last)) {
+      // 🔧 Dời việc notifyListeners() sang frame kế tiếp để tránh lỗi
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<MoodVM>().clearAll();
+        context.read<CalendarVM>().clearAll();
+      });
+      _last = current;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+class RootRouter extends StatelessWidget {
+  const RootRouter({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final router = _buildRouter(context);
+    return AuthSessionListener(
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerConfig: router,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF90B7C2),
+            brightness: Brightness.light,
+          ),
+          useMaterial3: true,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color.fromARGB(255, 234, 207, 207),
+            foregroundColor: Colors.black,
+          ),
+        ),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF90B7C2),
+            brightness: Brightness.dark,
+          ),
+          useMaterial3: true,
+        ),
+        themeMode: ThemeMode.system,
+      ),
+    );
+  }
+}
+
+GoRouter _buildRouter(BuildContext context) {
+  final auth = context.read<AuthService>();
+
+  return GoRouter(
+    initialLocation: '/splash',
+    refreshListenable: GoRouterRefreshStream(auth.session$),
+    routes: [
+      GoRoute(path: '/splash', builder: (_, __) => const IntroSplashPage()),
+      GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+      GoRoute(path: '/', builder: (_, __) => const AppShell()),
+      GoRoute(
+        path: '/mood/new',
+        builder: (_, state) =>
+            MoodEditPage(day: (state.extra as DateTime?) ?? DateTime.now()),
+      ),
+    ],
+    redirect: (ctx, state) {
+      final session = auth.currentSession;
+      final atSplash = state.matchedLocation == '/splash';
+      final atLogin = state.matchedLocation == '/login';
+      if (atSplash) return null;
+      if (session == null) return atLogin ? null : '/login';
+      if (atLogin) return '/';
+      return null;
+    },
+  );
+}
