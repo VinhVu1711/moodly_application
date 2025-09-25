@@ -102,7 +102,16 @@ GoRouter _buildRouter(BuildContext context) {
     routes: [
       GoRoute(path: '/splash', builder: (_, __) => const IntroSplashPage()),
       GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+
+      // Home (tab Lịch mặc định)
       GoRoute(path: '/', builder: (_, __) => const AppShell()),
+
+      // NEW: deep-link vào tab Biểu đồ
+      GoRoute(
+        path: '/stats',
+        builder: (_, __) => const AppShell(initialIndex: 1),
+      ),
+
       GoRoute(
         path: '/mood/new',
         builder: (_, state) =>

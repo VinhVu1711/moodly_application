@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../mood/domain/mood.dart';
+import 'dart:collection'; // ADD: để trả về map chỉ-đọc
 
 DateTime _normalize(DateTime d) => DateTime(d.year, d.month, d.day);
 
@@ -136,5 +137,30 @@ class MoodVM extends ChangeNotifier {
       _busy = false;
       notifyListeners();
     }
+  }
+  // ===================== READ-ONLY VIEWS (ADD) =====================
+
+  /// Map<DateTime, Mood> chỉ-đọc để UI có thể quan sát mà không sửa được.
+  UnmodifiableMapView<DateTime, Mood> get byDay => UnmodifiableMapView(_byDay);
+
+  /// Map<DateTime, Emotion5> cho thống kê (StatsVM dùng).
+  /// Key đã được normalize theo 00:00 của ngày (giống _byDay).
+  Map<DateTime, Emotion5> get mainEmotionByDay {
+    final map = <DateTime, Emotion5>{};
+    _byDay.forEach((day, mood) => map[day] = mood.emotion);
+    return map;
+  }
+
+  // ===================== OPTIONAL HELPERS (ADD, không bắt buộc) =====================
+
+  /// Kiểm tra trong cache đã có ÍT NHẤT 1 bản ghi của (year, month) hay chưa.
+  bool hasMonthLoaded(int year, int month) =>
+      _byDay.keys.any((d) => d.year == year && d.month == month);
+
+  /// Đảm bảo dữ liệu tháng có trong cache; nếu chưa thì fetch.
+  /// Trả về `null` nếu OK, hoặc message lỗi từ fetchMonth.
+  Future<String?> ensureMonthLoaded(int year, int month) {
+    if (hasMonthLoaded(year, month)) return Future.value(null);
+    return fetchMonth(year, month);
   }
 }

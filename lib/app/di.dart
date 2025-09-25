@@ -7,6 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+// NEW: import StatsVM
+import 'package:moodlyy_application/features/stats/vm/stats_vm.dart';
+
 List<SingleChildWidget> buildProviders() => [
   // 1) Supabase client
   Provider<SupabaseClient>(create: (_) => Supabase.instance.client),
@@ -36,4 +39,14 @@ List<SingleChildWidget> buildProviders() => [
     ),
   ),
   ChangeNotifierProvider<MoodVM>(create: (_) => MoodVM()),
+
+  // NEW: StatsVM phụ thuộc MoodVM → dùng ProxyProvider để bind dữ liệu nguồn
+  ChangeNotifierProxyProvider<MoodVM, StatsVM>(
+    create: (_) => StatsVM(),
+    update: (_, moodVM, stats) {
+      stats ??= StatsVM();
+      stats.bindMoodVM(moodVM);
+      return stats;
+    },
+  ),
 ];

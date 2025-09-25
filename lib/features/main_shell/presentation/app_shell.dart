@@ -5,14 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:moodlyy_application/features/auth/vm/auth_vm.dart';
 import 'package:moodlyy_application/features/calendar/presentation/calendar_page.dart';
 
-// Stub pages (tạo tạm thời)
-class StatsPage extends StatelessWidget {
-  const StatsPage({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Stats (coming soon)'));
-}
+// NEW: import StatsPage thật
+import 'package:moodlyy_application/features/stats/presentation/stats_page.dart';
 
+// Giữ 2 stub còn lại cho tới khi em làm xong
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
   @override
@@ -46,22 +42,30 @@ class UserPage extends StatelessWidget {
 }
 
 class AppShell extends StatefulWidget {
-  const AppShell({super.key});
+  // NEW: cho phép mở thẳng 1 tab (vd: /stats -> index 1)
+  final int initialIndex;
+  const AppShell({super.key, this.initialIndex = 0});
 
   @override
   State<AppShell> createState() => _AppShellState();
 }
 
 class _AppShellState extends State<AppShell> {
-  int _index = 0;
+  late int _index;
 
   // Màu seed (mint) của app — dùng cho nhấn nhá
   static const mint = Color(0xFF90B7C2);
 
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.initialIndex; // NEW
+  }
+
   late final List<Widget> _pages = const [
     CalendarPage(), // 0 - Lịch
-    StatsPage(), // 1 - Biểu đồ
-    SizedBox(), // 2 - Mặt cười (không có page, sẽ push /mood/new)
+    StatsPage(), // 1 - Biểu đồ (THẬT)
+    SizedBox(), // 2 - Mặt cười (push /mood/new)
     FavoritesPage(), // 3 - Yêu thích
     UserPage(), // 4 - Người dùng
   ];
@@ -82,7 +86,6 @@ class _AppShellState extends State<AppShell> {
         index: _index,
         children: _pages,
       ),
-
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: _onNavTap,
