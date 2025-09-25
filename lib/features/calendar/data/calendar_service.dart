@@ -1,29 +1,48 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-//Lấy ra những ngày nào trong 1 tháng mà người dùng có ghi mood
 class CalendarService {
   final SupabaseClient _sp;
   CalendarService(this._sp);
 
-  /// Trả về các ngày (UTC-normalized) có mood trong [monthStart, monthEnd]
+  /// Trả về các ngày (LOCAL normalized) có mood trong [monthStart, monthEnd]
+  /// Nếu [emotionDb] != null thì lọc theo cảm xúc chính (ví dụ: 'happy')
   Future<Set<DateTime>> getMoodDaysInMonth({
     required String userId,
     required DateTime monthStart,
     required DateTime monthEnd,
+    String? emotionDb, // ⬅️ NEW
   }) async {
-    //Vào bảng moods, lấy cột created_at, lọc theo thời gian từ monthStart đến monthEnd và lọc theo UserID
-    final res = await _sp
+    // dùng cột 'day' (DATE) để đúng với ý nghĩa “mood của ngày”
+    final qb = _sp
         .from('moods')
-        .select('created_at')
-        .gte('created_at', monthStart.toIso8601String())
-        .lte('created_at', monthEnd.toIso8601String())
-        .eq('user_id', userId);
+        .select('day')
+        .eq('user_id', userId)
+        .gte(
+          'day',
+          DateTime(
+            monthStart.year,
+            monthStart.month,
+            monthStart.day,
+          ).toIso8601String(),
+        )
+        .lte(
+          'day',
+          DateTime(
+            monthEnd.year,
+            monthEnd.month,
+            monthEnd.day,
+          ).toIso8601String(),
+        );
 
+    if (emotionDb != null) {
+      qb.eq('emotion', emotionDb);
+    }
+
+    final res = await qb;
     final set = <DateTime>{};
     for (final row in (res as List)) {
-      final dt = DateTime.parse(row['created_at'] as String).toLocal();
-      final day = DateTime(dt.year, dt.month, dt.day);
-      set.add(day);
+      final d = DateTime.parse(row['day'] as String).toLocal();
+      set.add(DateTime(d.year, d.month, d.day));
     }
     return set;
   }

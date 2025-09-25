@@ -16,6 +16,41 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+  Future<void> _showTodayQuoteDialog(BuildContext context) async {
+    final qs = QuoteService(Supabase.instance.client);
+    final cs = Theme.of(context).colorScheme;
+
+    final quote = await qs.getTodayQuote(lang: 'vi');
+
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: cs.surfaceContainerHigh,
+        title: Text(
+          'Inspiration for today',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          quote,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    );
+
+    // Đánh dấu đã xem hôm nay để lần sau vẫn hiển thị đúng quote này
+    await qs.markShown();
+  }
+
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
@@ -95,17 +130,18 @@ class _CalendarPageState extends State<CalendarPage> {
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
+
+        // 👇 NEW: Nút leading mở bộ lọc cảm xúc
         leading: IconButton(
-          tooltip: cal.highlightEnabled
-              ? 'Tắt highlight ngày có mood'
-              : 'Bật highlight ngày có mood',
+          tooltip: cal.isFiltered
+              ? 'Đang lọc: ${cal.filterEmotion!.label}. Bấm để đổi/clear'
+              : 'Lọc theo cảm xúc',
           icon: Icon(
-            cal.highlightEnabled
-                ? Icons.brightness_5
-                : Icons.brightness_5_outlined,
+            cal.isFiltered ? Icons.filter_alt : Icons.filter_alt_outlined,
           ),
-          onPressed: cal.toggleHighlight,
+          onPressed: _pickEmotionFilter, // mở dialog filter
         ),
+
         // Bấm title để chọn tháng/năm
         title: InkWell(
           onTap: _pickMonthYear,
@@ -123,55 +159,24 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
         actions: [
+          // 👇 NEW: chuyển nút bật/tắt highlight sang actions để giữ tính năng cũ
           IconButton(
-            tooltip: 'Tìm kiếm',
-            icon: const Icon(Icons.search),
-            onPressed: () {},
+            tooltip: cal.highlightEnabled
+                ? 'Tắt highlight ngày có mood'
+                : 'Bật highlight ngày có mood',
+            icon: Icon(
+              cal.highlightEnabled
+                  ? Icons.brightness_5
+                  : Icons.brightness_5_outlined,
+            ),
+            onPressed: cal.toggleHighlight,
           ),
+
           IconButton(
             tooltip: 'Quote hôm nay',
             icon: const Icon(Icons.cookie),
             onPressed: () async {
-              final qs = QuoteService(Supabase.instance.client);
-              final canShow = await qs.shouldShowTodayQuote();
-              final quote = await qs.getTodayQuote(lang: 'vi');
-              if (canShow && mounted) {
-                await showModalBottomSheet(
-                  context: context,
-                  showDragHandle: true,
-                  backgroundColor: Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainerHigh,
-                  builder: (_) => Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Inspiration for today',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(quote, textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
-                        FilledButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: FilledButton.styleFrom(backgroundColor: mint),
-                          child: const Text('Nice!'),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-                await qs.markShown();
-              } else if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Bạn đã xem quote hôm nay rồi!'),
-                  ),
-                );
-              }
+              _showTodayQuoteDialog(context);
             },
           ),
         ],
@@ -222,7 +227,15 @@ class _CalendarPageState extends State<CalendarPage> {
                 calendarBuilders: CalendarBuilders(
                   defaultBuilder: (ctx, day, _) {
                     final m = mood.moodOf(day);
-                    final show = cal.highlightEnabled && !isLoading; // 👈 NEW
+
+                    // 👇 NEW: chỉ hiển thị icon nếu khớp filter (hoặc không lọc)
+                    final matchesFilter = cal.filterEmotion == null
+                        ? true
+                        : (m?.emotion == cal.filterEmotion);
+
+                    final show =
+                        cal.highlightEnabled && !isLoading && matchesFilter;
+
                     return _dayCellWithEmotion(
                       context: context,
                       day: day,
@@ -233,7 +246,12 @@ class _CalendarPageState extends State<CalendarPage> {
                   },
                   todayBuilder: (ctx, day, _) {
                     final m = mood.moodOf(day);
-                    final show = cal.highlightEnabled && !isLoading; // 👈 NEW
+                    final matchesFilter = cal.filterEmotion == null
+                        ? true
+                        : (m?.emotion == cal.filterEmotion);
+                    final show =
+                        cal.highlightEnabled && !isLoading && matchesFilter;
+
                     return _dayCellWithEmotion(
                       context: context,
                       day: day,
@@ -287,6 +305,118 @@ class _CalendarPageState extends State<CalendarPage> {
       await mood.fetchMonth(focused.year, focused.month);
       setState(() {}); // rebuild tiêu đề
     }
+  }
+
+  // 👇 NEW: dialog chọn cảm xúc (All + 5 icon)
+  Future<void> _pickEmotionFilter() async {
+    final cal = context.read<CalendarVM>();
+    final cs = Theme.of(context).colorScheme;
+
+    final selected = await showDialog<Emotion5?>(
+      context: context,
+      builder: (_) {
+        Emotion5? temp = cal.filterEmotion;
+        return AlertDialog(
+          backgroundColor: cs.surfaceContainerHigh,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Lọc theo cảm xúc',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          content: StatefulBuilder(
+            builder: (ctx, setStateSB) {
+              Widget chip({
+                required Widget child,
+                required bool selected,
+                required VoidCallback onTap,
+              }) {
+                return InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? cs.primaryContainer
+                          : cs.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: child,
+                  ),
+                );
+              }
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // All
+                  chip(
+                    selected: temp == null,
+                    onTap: () => setStateSB(() => temp = null),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.all_inclusive, size: 18),
+                        SizedBox(width: 8),
+                        Text('All'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // 5 cảm xúc
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: Emotion5.values.map((e) {
+                      final sel = temp == e;
+                      return chip(
+                        selected: sel,
+                        onTap: () => setStateSB(() => temp = e),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: Image.asset(
+                                e.assetPath,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(e.label),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, temp),
+              child: const Text('Apply'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!mounted) return;
+    await cal.setFilterEmotion(selected); // VM sẽ tự reload tháng
   }
 
   String _monthName(int m) {

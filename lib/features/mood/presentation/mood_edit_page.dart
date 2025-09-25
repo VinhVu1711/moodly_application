@@ -151,9 +151,55 @@ class _MoodEditPageState extends State<MoodEditPage> {
     }
   }
 
+  // ====== NEW: confirm delete dialog & action ======
+  Future<void> _confirmAndDelete() async {
+    final vm = context.read<MoodVM>();
+    final cs = Theme.of(context).colorScheme;
+
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: cs.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Delete this mood?'),
+        content: const Text(
+          'This will remove your mood (emotion, other emotions, people, and note) for this day.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (ok == true) {
+      final err = await vm.deleteDay(_day);
+      if (!mounted) return;
+      if (err == null) {
+        Navigator.pop(context, true); // để Calendar refresh
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(err)));
+      }
+    }
+  }
+  // =================================================
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MoodVM>(); // để bắt isBusy
+
+    // NEW: kiểm tra xem ngày hiện tại đã có mood hay chưa
+    final hasExistingMood = context.select<MoodVM, bool>(
+      (m) => m.moodOf(_day) != null,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -180,6 +226,15 @@ class _MoodEditPageState extends State<MoodEditPage> {
             ],
           ),
         ),
+        // ===== NEW: nút Delete chỉ hiện khi đã có mood cho ngày này =====
+        actions: [
+          if (hasExistingMood)
+            IconButton(
+              tooltip: 'Delete mood',
+              icon: const Icon(Icons.delete_outline),
+              onPressed: vm.isBusy ? null : _confirmAndDelete,
+            ),
+        ],
       ),
 
       bottomNavigationBar: SafeArea(

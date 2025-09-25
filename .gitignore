@@ -1,45 +1,64 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# ==== Flutter / Dart ====
 .dart_tool/
+.packages
+.flutter-plugins
 .flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
+.melos_tool/
+build/
+coverage/
+**/flutter_export_environment.sh
 
-# Symbolication related
-app.*.symbols
+# ==== IDE ====
+# Android Studio / IntelliJ
+.idea/
+*.iml
+# VS Code
+.vscode/
 
-# Obfuscation related
-app.*.map.json
+# ==== Android ====
+android/.gradle/
+android/local.properties
+android/**/captures/
+android/**/generated/
+# Keystore & cấu hình ký app
+**/*.keystore
+**/*.jks
+android/key.properties
+# (Tuỳ chọn) Firebase file - chỉ commit nếu team đồng ý
+android/app/google-services.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# ==== iOS / macOS (CocoaPods) ====
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/.last_build_id
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+ios/ServiceDefinitions.json
+**/DerivedData/
+*.xcworkspace
+*.xcuserdatad/
+*.xcuserdata/
+# macOS
+macos/Pods/
+macos/.symlinks/
+
+# ==== Web / Desktop ====
+# (build đầu ra đã nằm trong build/ ở trên)
+
+# ==== Fastlane/Reports ====
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+
+# ==== Hệ điều hành & linh tinh ====
+.DS_Store
+Thumbs.db
+*.log
+
+# ==== Secrets / Env ====
+.env
+.env.*
+*.pem
+*.p12
+*.cer
+*.key
