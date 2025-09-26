@@ -37,6 +37,15 @@ class StatsVM extends ChangeNotifier {
   DateTime get selectedMonth => _selectedMonth;
   int get selectedYear => _selectedYear;
 
+  // ✅ NEW: tiện cho UI hỏi nhanh chế độ hiện tại
+  bool get isYearMode => _scope == StatsScope.year;
+  bool get isMonthMode => _scope == StatsScope.month;
+
+  /// ✅ NEW: tổng số tick trục X (năm: 12 tháng; tháng: số ngày trong tháng)
+  int get xCount => isYearMode
+      ? 12
+      : DateUtils.getDaysInMonth(_selectedMonth.year, _selectedMonth.month);
+
   // ------ nguồn dữ liệu (được bơm từ DI) ------
   MoodVM? _moodVM;
 
@@ -45,18 +54,15 @@ class StatsVM extends ChangeNotifier {
 
   void bindMoodVM(MoodVM vm) {
     if (!identical(_moodVM, vm)) {
-      // REMOVE old listener nếu có
       _moodVM?.removeListener(_onMoodChanged);
       _moodVM = vm;
-      // ADD listener mới
       _moodVM?.addListener(_onMoodChanged);
-      notifyListeners(); // đổi nguồn → tính lại
+      notifyListeners();
     }
   }
 
   @override
   void dispose() {
-    // REMOVE listener để tránh leak
     _moodVM?.removeListener(_onMoodChanged);
     super.dispose();
   }
@@ -86,13 +92,10 @@ class StatsVM extends ChangeNotifier {
   }
 
   // ------ truy xuất dữ liệu thô từ MoodVM ------
-  /// TODO: SỬA CHO KHỚP VỚI MODEL THỰC TẾ CỦA EM.
-  /// Ví dụ giả định: MoodVM có Map<DateTime, Emotion5> mainEmotionByDay (chỉ 1 main/day).
   Map<DateTime, Emotion5> get _mainByDay {
     final vm = _moodVM;
     if (vm == null) return const {};
-    // ↓↓↓ Thay dòng dưới bằng getter thực tế của em ↓↓↓
-    return vm.mainEmotionByDay; // <-- ví dụ: map theo UTC 00:00 của từng ngày
+    return vm.mainEmotionByDay; // map theo ngày 00:00
   }
 
   // ------ tính toán dẫn xuất cho từng scope ------
@@ -108,23 +111,20 @@ class StatsVM extends ChangeNotifier {
         return MoodPoint(i + 1, emo?.score.toDouble());
       });
     } else {
-      // year scope: 12 điểm, mỗi điểm là TRUNG BÌNH điểm score của các ngày trong tháng đó
       return List.generate(12, (i) {
-        final month = i + 1;
-        final start = DateTime(_selectedYear, month, 1);
+        final m = i + 1;
+        final start = DateTime(_selectedYear, m, 1);
         final end = DateTime(
           _selectedYear,
-          month + 1,
+          m + 1,
           1,
         ).subtract(const Duration(days: 1));
         final entries = _mainByDay.entries.where(
           (e) => !e.key.isBefore(start) && !e.key.isAfter(end),
         );
-        if (entries.isEmpty) return MoodPoint(month, null);
-        final avg = entries
-            .map((e) => e.value.score)
-            .average; // from collection pkg
-        return MoodPoint(month, avg);
+        if (entries.isEmpty) return MoodPoint(m, null);
+        final avg = entries.map((e) => e.value.score).average;
+        return MoodPoint(m, avg);
       });
     }
   }
@@ -139,7 +139,6 @@ class StatsVM extends ChangeNotifier {
     };
 
     Iterable<MapEntry<DateTime, Emotion5>> entries;
-
     if (_scope == StatsScope.month) {
       final start = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
       final end = DateTime(
@@ -164,18 +163,47 @@ class StatsVM extends ChangeNotifier {
     return c;
   }
 
-  int get total => counts.values.sum; // tổng entry trong phạm vi
+  int get total => counts.values.sum;
 
   Map<Emotion5, double> get percents {
     final t = total;
     if (t == 0) {
-      return {
-        for (final emo in Emotion5.values) emo: 0.0,
-      };
+      return {for (final emo in Emotion5.values) emo: 0.0};
     }
     final c = counts;
-    return {
-      for (final emo in Emotion5.values) emo: (c[emo]! * 100.0) / t,
-    };
+    return {for (final emo in Emotion5.values) emo: (c[emo]! * 100.0) / t};
+  }
+
+  // ================= NEW: các con số hiển thị trên chip =================
+
+  /// Số ngày đã react trong tháng đang chọn
+  int get reactedDaysInSelectedMonth {
+    final start = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
+    final end = DateTime(
+      _selectedMonth.year,
+      _selectedMonth.month + 1,
+      1,
+    ).subtract(const Duration(days: 1));
+    return _mainByDay.keys
+        .where((d) => !d.isBefore(start) && !d.isAfter(end))
+        .length;
+  }
+
+  /// Số tháng trong năm đã react ĐẦY ĐỦ (không thiếu ngày nào)
+  int get fullyReactedMonthsInSelectedYear {
+    int full = 0;
+    for (int m = 1; m <= 12; m++) {
+      final days = DateUtils.getDaysInMonth(_selectedYear, m);
+      bool allDaysHaveMood = true;
+      for (int d = 1; d <= days; d++) {
+        final key = DateTime(_selectedYear, m, d); // y/m/d 00:00
+        if (!_mainByDay.containsKey(key)) {
+          allDaysHaveMood = false;
+          break;
+        }
+      }
+      if (allDaysHaveMood) full++;
+    }
+    return full;
   }
 }

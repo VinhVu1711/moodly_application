@@ -35,18 +35,13 @@ class StatsPage extends StatelessWidget {
             onPressed: () async {
               final vm = context.read<StatsVM>();
               if (vm.scope == StatsScope.month) {
-                final now = vm.selectedMonth;
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: now,
-                  firstDate: DateTime(now.year - 5),
-                  lastDate: DateTime(now.year + 5),
-                  helpText: 'Chọn ngày bất kỳ trong THÁNG muốn xem',
-                );
+                // ✅ chỉ cho chọn THÁNG trong NĂM (không chọn ngày)
+                final picked = await _pickMonth(context, vm.selectedMonth);
                 if (picked != null) {
                   vm.setMonth(DateTime(picked.year, picked.month));
                 }
               } else {
+                // ✅ chỉ cho chọn NĂM
                 final y = await _pickYear(context, vm.selectedYear);
                 if (y != null) vm.setYear(y);
               }
@@ -69,21 +64,17 @@ class _StatsBody extends StatefulWidget {
 class _StatsBodyState extends State<_StatsBody> {
   @override
   Widget build(BuildContext context) {
-    // Lấy snapshot các giá trị cần để ensure (tránh watch cả VM gây rebuild thừa)
     final scope = context.select<StatsVM, StatsScope>((vm) => vm.scope);
     final month = context.select<StatsVM, DateTime>((vm) => vm.selectedMonth);
     final year = context.select<StatsVM, int>((vm) => vm.selectedYear);
 
-    // ✅ Ensure dữ liệu SAU frame hiện tại → tránh notifyListeners trong build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final mood = context.read<MoodVM>();
       if (scope == StatsScope.month) {
         mood.ensureMonthLoaded(month.year, month.month);
       } else {
-        // Tối thiểu đảm bảo có dữ liệu cho 1 tháng trong năm đã chọn
         mood.ensureMonthLoaded(year, DateTime.now().month);
-        // (Sau này có thể preload đủ 12 tháng nếu muốn)
       }
     });
 
@@ -112,7 +103,7 @@ class _StatsBodyState extends State<_StatsBody> {
 
 class _Card extends StatelessWidget {
   final Widget child;
-  const _Card({required this.child, super.key});
+  const _Card({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +115,108 @@ class _Card extends StatelessWidget {
   }
 }
 
-// ====== Helper chọn năm nhanh ======
+// ====== Helper chọn tháng nhanh (chỉ Month & Year, KHÔNG có Day) ======
+Future<DateTime?> _pickMonth(
+  BuildContext context,
+  DateTime currentMonth,
+) async {
+  int yy = currentMonth.year;
+  return showDialog<DateTime>(
+    context: context,
+    builder: (ctx) {
+      return StatefulBuilder(
+        builder: (ctx, setState) {
+          return AlertDialog(
+            titlePadding: const EdgeInsets.fromLTRB(20, 16, 10, 0),
+            contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            title: Row(
+              children: [
+                IconButton(
+                  tooltip: 'Năm trước',
+                  onPressed: () => setState(() => yy--),
+                  icon: const Icon(Icons.chevron_left),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      '$yy',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Năm sau',
+                  onPressed: () => setState(() => yy++),
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ],
+            ),
+            content: SizedBox(
+              width: 320,
+              child: GridView.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                shrinkWrap: true,
+                children: List.generate(12, (i) {
+                  final m = i + 1;
+                  final isSelected =
+                      (yy == currentMonth.year && m == currentMonth.month);
+                  final label = _monthLabel(m);
+                  return OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: BorderSide(
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).dividerColor,
+                      ),
+                      backgroundColor: isSelected
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.primary.withOpacity(0.10)
+                          : null,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () =>
+                        Navigator.pop(ctx, DateTime(yy, m, 1)), // trả về y/m
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+String _monthLabel(int m) => const [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+][m - 1];
+
+// ====== Helper chọn năm nhanh (giữ nguyên) ======
 Future<int?> _pickYear(BuildContext context, int currentYear) async {
   int temp = currentYear;
   return showDialog<int>(

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fl_chart/fl_chart.dart';
-
 import '../../vm/stats_vm.dart';
-import '../../../mood/domain/mood.dart'; // đường dẫn của em tới Emotion5
+import '../../../mood/domain/mood.dart';
 
 class MoodBarChart extends StatelessWidget {
   const MoodBarChart({super.key});
@@ -13,69 +11,411 @@ class MoodBarChart extends StatelessWidget {
     return Selector<StatsVM, Map<Emotion5, double>>(
       selector: (_, vm) => vm.percents,
       builder: (_, percents, __) {
-        final entries = Emotion5.values
-            .map((e) => MapEntry(e, percents[e]!))
-            .toList();
+        final order = [
+          Emotion5.veryHappy,
+          Emotion5.happy,
+          Emotion5.neutral,
+          Emotion5.sad,
+          Emotion5.verySad,
+        ];
+        final topEntry = percents.entries.reduce(
+          (a, b) => a.value >= b.value ? a : b,
+        );
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'MoodBar (%)',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 180,
-              child: BarChart(
-                BarChartData(
-                  minY: 0, // ADD: rõ ràng
-                  maxY: 100, // ADD
-                  barGroups: [
-                    for (int i = 0; i < entries.length; i++)
-                      BarChartGroupData(
-                        x: i,
-                        barRods: [
-                          BarChartRodData(toY: entries[i].value, width: 16),
-                        ],
-                      ),
-                  ],
-                  titlesData: FlTitlesData(
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false), // ADD
+        final totalEntries = percents.values.fold(
+          0.0,
+          (sum, percent) => sum + percent,
+        );
+        final hasData = totalEntries > 0;
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Enhanced Header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.secondary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false), // ADD
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true, interval: 20),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (v, _) {
-                          final emo = Emotion5.values[v.toInt()];
-                          return Text(_short(emo));
-                        },
-                      ),
+                    child: Icon(
+                      Icons.bar_chart_rounded,
+                      color: Theme.of(context).colorScheme.secondary,
+                      size: 20,
                     ),
                   ),
-                  gridData: const FlGridData(show: true),
-                  borderData: FlBorderData(show: true),
-                ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Mood Distribution',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        hasData
+                            ? 'Most common: ${_getEmotionLabel(topEntry.key)}'
+                            : 'No data available',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              // Enhanced mood items with animations
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  for (final e in order)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: _EnhancedMoodPercentItem(
+                          emotion: e,
+                          percent: percents[e] ?? 0,
+                          highlighted:
+                              e == topEntry.key && (topEntry.value > 0),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Enhanced stacked bar with labels
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Overall Balance',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      if (hasData)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: topEntry.key.color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Dominated by ${_getEmotionLabel(topEntry.key)}',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: topEntry.key.color,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _EnhancedStackedPill(
+                    percents: {
+                      Emotion5.veryHappy: percents[Emotion5.veryHappy] ?? 0,
+                      Emotion5.happy: percents[Emotion5.happy] ?? 0,
+                      Emotion5.neutral: percents[Emotion5.neutral] ?? 0,
+                      Emotion5.sad: percents[Emotion5.sad] ?? 0,
+                      Emotion5.verySad: percents[Emotion5.verySad] ?? 0,
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  String _short(Emotion5 e) => switch (e) {
-    Emotion5.verySad => 'V.Sad',
-    Emotion5.sad => 'Sad',
-    Emotion5.neutral => 'Neutral',
-    Emotion5.happy => 'Happy',
-    Emotion5.veryHappy => 'V.Happy',
+  String _getEmotionLabel(Emotion5 emotion) {
+    switch (emotion) {
+      case Emotion5.veryHappy:
+        return 'Very Happy';
+      case Emotion5.happy:
+        return 'Happy';
+      case Emotion5.neutral:
+        return 'Neutral';
+      case Emotion5.sad:
+        return 'Sad';
+      case Emotion5.verySad:
+        return 'Very Sad';
+    }
+  }
+}
+
+class _EnhancedMoodPercentItem extends StatelessWidget {
+  final Emotion5 emotion;
+  final double percent;
+  final bool highlighted;
+
+  const _EnhancedMoodPercentItem({
+    required this.emotion,
+    required this.percent,
+    required this.highlighted,
+  });
+
+  String get _assetPath => switch (emotion) {
+    Emotion5.veryHappy => 'assets/emotion/veryhappy.png',
+    Emotion5.happy => 'assets/emotion/happy.png',
+    Emotion5.neutral => 'assets/emotion/neutral.png',
+    Emotion5.sad => 'assets/emotion/sad-face.png',
+    Emotion5.verySad => 'assets/emotion/verysad.png',
   };
+
+  @override
+  Widget build(BuildContext context) {
+    final p = percent.clamp(0, 100);
+    final c = emotion.color;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: Column(
+        children: [
+          // Enhanced avatar with glow effect for highlighted
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: highlighted
+                ? BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: c.withOpacity(0.4),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  )
+                : null,
+            child: CircleAvatar(
+              radius: highlighted ? 26 : 22,
+              backgroundColor: c.withOpacity(highlighted ? 0.3 : 0.25),
+              child: Container(
+                padding: EdgeInsets.all(highlighted ? 8 : 6),
+                child: Image.asset(
+                  _assetPath,
+                  fit: BoxFit.contain,
+                  width: highlighted ? 32 : 28,
+                  height: highlighted ? 32 : 28,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (_, __, ___) => Icon(
+                    Icons.sentiment_neutral,
+                    color: c,
+                    size: highlighted ? 24 : 20,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // Enhanced percentage chip with animation
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: EdgeInsets.symmetric(
+              horizontal: highlighted ? 12 : 10,
+              vertical: highlighted ? 6 : 4,
+            ),
+            decoration: BoxDecoration(
+              color: highlighted
+                  ? c.withOpacity(0.18)
+                  : Colors.grey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(
+                color: highlighted
+                    ? c.withOpacity(0.6)
+                    : Colors.grey.withOpacity(0.3),
+                width: highlighted ? 2 : 1,
+              ),
+            ),
+            child: Text(
+              '${p.toStringAsFixed(0)}%',
+              style: TextStyle(
+                fontWeight: highlighted ? FontWeight.w700 : FontWeight.w600,
+                fontSize: highlighted ? 13 : 12,
+                color: highlighted ? c : Colors.grey[700],
+              ),
+            ),
+          ),
+
+          // Mood label
+          if (highlighted) ...[
+            const SizedBox(height: 4),
+            Text(
+              _getEmotionName(emotion),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: c,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _getEmotionName(Emotion5 emotion) {
+    switch (emotion) {
+      case Emotion5.veryHappy:
+        return 'Very Happy';
+      case Emotion5.happy:
+        return 'Happy';
+      case Emotion5.neutral:
+        return 'Neutral';
+      case Emotion5.sad:
+        return 'Sad';
+      case Emotion5.verySad:
+        return 'Very Sad';
+    }
+  }
+}
+
+class _EnhancedStackedPill extends StatelessWidget {
+  final Map<Emotion5, double> percents;
+  const _EnhancedStackedPill({required this.percents});
+
+  @override
+  Widget build(BuildContext context) {
+    final keys = [
+      Emotion5.veryHappy,
+      Emotion5.happy,
+      Emotion5.neutral,
+      Emotion5.sad,
+      Emotion5.verySad,
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final w = constraints.maxWidth;
+        final children = <Widget>[];
+        double offset = 0;
+        //final totalPercent = percents.values.fold(0.0, (sum, p) => sum + p);
+
+        for (final k in keys) {
+          final p = (percents[k] ?? 0).clamp(0, 100) / 100.0;
+          final segW = w * p;
+          if (segW <= 0) continue;
+
+          children.add(
+            Positioned(
+              left: offset,
+              width: segW,
+              top: 0,
+              bottom: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: k.color,
+                  // Add subtle gradient for depth
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      k.color,
+                      k.color.withOpacity(0.8),
+                    ],
+                  ),
+                ),
+                child:
+                    segW >
+                        30 // Only show percentage if segment is wide enough
+                    ? Center(
+                        child: Text(
+                          '${(p * 100).toStringAsFixed(0)}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black26,
+                                offset: Offset(0, 1),
+                                blurRadius: 2,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+            ),
+          );
+          offset += segW;
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              height: 28,
+              color: Colors.grey[200],
+              child: Stack(
+                children: [
+                  ...children,
+                  // Add subtle inner shadow for depth
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 2,
+                          offset: const Offset(0, 1),
+                          spreadRadius: -1,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
