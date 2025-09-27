@@ -37,11 +37,11 @@ class StatsVM extends ChangeNotifier {
   DateTime get selectedMonth => _selectedMonth;
   int get selectedYear => _selectedYear;
 
-  // ✅ NEW: tiện cho UI hỏi nhanh chế độ hiện tại
+  // ✅ tiện cho UI hỏi nhanh chế độ hiện tại
   bool get isYearMode => _scope == StatsScope.year;
   bool get isMonthMode => _scope == StatsScope.month;
 
-  /// ✅ NEW: tổng số tick trục X (năm: 12 tháng; tháng: số ngày trong tháng)
+  /// ✅ tổng số tick trục X (năm: 12 tháng; tháng: số ngày trong tháng)
   int get xCount => isYearMode
       ? 12
       : DateUtils.getDaysInMonth(_selectedMonth.year, _selectedMonth.month);
@@ -205,5 +205,49 @@ class StatsVM extends ChangeNotifier {
       if (allDaysHaveMood) full++;
     }
     return full;
+  }
+
+  // -------------------- NEW: Streak dựa trên created_at --------------------
+
+  DateTime _normalize(DateTime d) => DateTime(d.year, d.month, d.day);
+
+  /// Tập các NGÀY (00:00 local) mà người dùng đã **thực sự log** (dựa trên created_at).
+  Set<DateTime> get _createdDays {
+    final vm = _moodVM;
+    if (vm == null) return <DateTime>{};
+    final set = <DateTime>{};
+    for (final m in vm.items) {
+      // giả định model Mood có m.createdAt; nếu null thì fallback m.day
+      final ca = (m.createdAt ?? m.day).toLocal();
+      set.add(_normalize(ca));
+    }
+    return set;
+  }
+
+  /// Streak hiện tại:
+  /// - Nếu hôm nay có log: đếm liên tiếp từ hôm nay lùi về.
+  /// - Nếu hôm nay chưa log nhưng hôm qua có: đếm liên tiếp từ hôm qua lùi về.
+  /// - Log quá khứ hôm nay tạo (backfill) sẽ KHÔNG kéo dài chuỗi cũ, vì created_at là hôm nay.
+  int get currentStreak {
+    final days = _createdDays;
+    if (days.isEmpty) return 0;
+
+    final today = _normalize(DateTime.now());
+    DateTime? start;
+    if (days.contains(today)) {
+      start = today;
+    } else {
+      final yesterday = today.subtract(const Duration(days: 1));
+      if (days.contains(yesterday)) start = yesterday;
+    }
+    if (start == null) return 0;
+
+    var d = start;
+    int streak = 0;
+    while (days.contains(d)) {
+      streak++;
+      d = d.subtract(const Duration(days: 1));
+    }
+    return streak;
   }
 }

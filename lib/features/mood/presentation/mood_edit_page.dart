@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../mood/domain/mood.dart';
 import '../../mood/vm/mood_vm.dart';
+import '../../calendar/vm/calendar_vm.dart'; // ⬅️ dùng helper kiểm tra ngày tương lai
 
 class MoodEditPage extends StatefulWidget {
   final DateTime day;
@@ -12,7 +13,6 @@ class MoodEditPage extends StatefulWidget {
 }
 
 class _MoodEditPageState extends State<MoodEditPage> {
-  // veryHappy → happy → neutral → sad → verySad
   static const List<Emotion5> orderedEmotions = [
     Emotion5.veryHappy,
     Emotion5.happy,
@@ -21,7 +21,6 @@ class _MoodEditPageState extends State<MoodEditPage> {
     Emotion5.verySad,
   ];
 
-  // Ngày đang chỉnh (có thể thay đổi khi user chọn lại)
   late DateTime _day;
 
   Emotion5 _mainEmotion = Emotion5.neutral;
@@ -36,7 +35,6 @@ class _MoodEditPageState extends State<MoodEditPage> {
   void initState() {
     super.initState();
     _day = DateTime(widget.day.year, widget.day.month, widget.day.day);
-    // Nếu VM đã có cache cho ngày này thì fill vào form (edit)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _hydrateFromVM(_day);
     });
@@ -57,7 +55,6 @@ class _MoodEditPageState extends State<MoodEditPage> {
         _noteCtrl.text = existing.note ?? '';
       });
     } else {
-      // Reset form nếu ngày chưa có dữ liệu
       setState(() {
         _mainEmotion = Emotion5.neutral;
         _subs.clear();
@@ -120,10 +117,33 @@ class _MoodEditPageState extends State<MoodEditPage> {
     return names[m - 1];
   }
 
+  // ⬇️ helper hiển thị cảnh báo ngày tương lai
+  void _showFutureNotAllowed(String message) {
+    final cs = Theme.of(context).colorScheme;
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: cs.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Không thể thực hiện'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _pickDayInMonth() async {
+    final cal = context.read<CalendarVM>();
+
     // Giới hạn chọn trong cùng tháng với _day hiện tại
     final monthStart = DateTime(_day.year, _day.month, 1);
     final monthEnd = DateTime(_day.year, _day.month + 1, 0);
+
     final picked = await showDatePicker(
       context: context,
       initialDate: _day,
@@ -133,17 +153,27 @@ class _MoodEditPageState extends State<MoodEditPage> {
       builder: (ctx, child) {
         return Theme(
           data: Theme.of(ctx).copyWith(
-            colorScheme: Theme.of(ctx).colorScheme.copyWith(
-              primary: Theme.of(ctx).colorScheme.primary,
-            ),
+            colorScheme: Theme.of(
+              ctx,
+            ).colorScheme.copyWith(primary: Theme.of(ctx).colorScheme.primary),
           ),
           child: child!,
         );
       },
+      // ✅ chặn chọn ngày tương lai ngay trong date picker
       selectableDayPredicate: (d) =>
-          d.month == _day.month && d.year == _day.year,
+          d.month == _day.month &&
+          d.year == _day.year &&
+          cal.isSelectableDay(d),
     );
+
     if (picked != null) {
+      // ✅ kiểm tra lại sau khi chọn (phòng trường hợp predicate thay đổi)
+      final err = cal.canReactOn(picked);
+      if (err != null) {
+        _showFutureNotAllowed(err);
+        return;
+      }
       setState(() {
         _day = DateTime(picked.year, picked.month, picked.day);
       });
@@ -151,7 +181,6 @@ class _MoodEditPageState extends State<MoodEditPage> {
     }
   }
 
-  // ====== NEW: confirm delete dialog & action ======
   Future<void> _confirmAndDelete() async {
     final vm = context.read<MoodVM>();
     final cs = Theme.of(context).colorScheme;
@@ -182,7 +211,7 @@ class _MoodEditPageState extends State<MoodEditPage> {
       final err = await vm.deleteDay(_day);
       if (!mounted) return;
       if (err == null) {
-        Navigator.pop(context, true); // để Calendar refresh
+        Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(
           context,
@@ -190,13 +219,10 @@ class _MoodEditPageState extends State<MoodEditPage> {
       }
     }
   }
-  // =================================================
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<MoodVM>(); // để bắt isBusy
-
-    // NEW: kiểm tra xem ngày hiện tại đã có mood hay chưa
+    final vm = context.watch<MoodVM>();
     final hasExistingMood = context.select<MoodVM, bool>(
       (m) => m.moodOf(_day) != null,
     );
@@ -210,7 +236,7 @@ class _MoodEditPageState extends State<MoodEditPage> {
           tooltip: 'Back',
         ),
         centerTitle: true,
-        // 👇 Bấm title để chọn ngày trong tháng
+        // 👇 Bấm title để chọn ngày trong tháng (đã chặn future)
         title: InkWell(
           onTap: _pickDayInMonth,
           borderRadius: BorderRadius.circular(8),
@@ -226,7 +252,6 @@ class _MoodEditPageState extends State<MoodEditPage> {
             ],
           ),
         ),
-        // ===== NEW: nút Delete chỉ hiện khi đã có mood cho ngày này =====
         actions: [
           if (hasExistingMood)
             IconButton(
@@ -245,8 +270,15 @@ class _MoodEditPageState extends State<MoodEditPage> {
             onPressed: vm.isBusy
                 ? null
                 : () async {
-                    final err = await context.read<MoodVM>().upsertDay(
-                      day: _day, // 👈 lưu theo ngày đang chọn
+                    // ✅ vẫn kiểm tra lần cuối trước khi lưu
+                    final err = context.read<CalendarVM>().canReactOn(_day);
+                    if (err != null) {
+                      _showFutureNotAllowed(err);
+                      return;
+                    }
+
+                    final res = await context.read<MoodVM>().upsertDay(
+                      day: _day,
                       emotion: _mainEmotion,
                       another: _subs.toList(),
                       people: _people.toList(),
@@ -255,12 +287,12 @@ class _MoodEditPageState extends State<MoodEditPage> {
                           : _noteCtrl.text.trim(),
                     );
                     if (!mounted) return;
-                    if (err == null) {
+                    if (res == null) {
                       Navigator.pop(context, true);
                     } else {
                       ScaffoldMessenger.of(
                         context,
-                      ).showSnackBar(SnackBar(content: Text(err)));
+                      ).showSnackBar(SnackBar(content: Text(res)));
                     }
                   },
             child: Text(vm.isBusy ? 'Saving...' : 'Done'),
@@ -271,7 +303,6 @@ class _MoodEditPageState extends State<MoodEditPage> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         children: [
-          // ===== How was your day? =====
           _Card(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
             child: Column(
@@ -298,10 +329,7 @@ class _MoodEditPageState extends State<MoodEditPage> {
               ],
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // ===== Emotions (AnotherEmotion) =====
           _ExpansionSection(
             title: 'Emotions',
             initiallyExpanded: _openEmotions,
@@ -319,10 +347,7 @@ class _MoodEditPageState extends State<MoodEditPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // ===== People =====
           _ExpansionSection(
             title: 'People',
             initiallyExpanded: _openPeople,
@@ -340,10 +365,7 @@ class _MoodEditPageState extends State<MoodEditPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // ===== Note =====
           _Card(
             padding: const EdgeInsets.all(12),
             child: TextField(
@@ -450,9 +472,9 @@ class _ExpansionSection extends StatelessWidget {
         ),
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
-          title: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w700),
+          title: const Text(
+            'Emotions',
+            style: TextStyle(fontWeight: FontWeight.w700),
           ),
           children: [child],
         ),

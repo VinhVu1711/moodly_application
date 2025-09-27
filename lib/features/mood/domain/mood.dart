@@ -164,6 +164,10 @@ class Mood {
   final List<People> people;
   final String? note;
 
+  // ✅ NEW: đọc timestamp từ Supabase để tính streak theo NGÀY log thực
+  final DateTime? createdAt; // map 'created_at'
+  final DateTime? updatedAt; // map 'updated_at'
+
   Mood({
     this.id,
     required this.day,
@@ -171,7 +175,10 @@ class Mood {
     this.another = const [],
     this.people = const [],
     this.note,
+    this.createdAt, // NEW
+    this.updatedAt, // NEW
   });
+
   Mood copyWith({
     String? id,
     DateTime? day,
@@ -179,6 +186,8 @@ class Mood {
     List<AnotherEmotion>? another,
     List<People>? people,
     String? note,
+    DateTime? createdAt, // NEW
+    DateTime? updatedAt, // NEW
   }) {
     return Mood(
       id: id ?? this.id,
@@ -187,6 +196,8 @@ class Mood {
       another: another ?? this.another,
       people: people ?? this.people,
       note: note ?? this.note,
+      createdAt: createdAt ?? this.createdAt, // NEW
+      updatedAt: updatedAt ?? this.updatedAt, // NEW
     );
   }
 
@@ -218,6 +229,7 @@ class Mood {
     'another_emotions': another.map((e) => e.db).toList(),
     'people': people.map((e) => e.db).toList(),
     'note': note,
+    // ❌ Không gửi created_at/updated_at — Supabase tự set
   };
 
   static Mood fromJson(Map<String, dynamic> j) => Mood(
@@ -233,5 +245,12 @@ class Mood {
         .map(PeopleX.fromDb)
         .toList(),
     note: j['note'] as String?,
+    // ✅ NEW: parse timestamp (có thể null với data cũ)
+    createdAt: j['created_at'] != null
+        ? DateTime.parse(j['created_at'] as String).toLocal()
+        : null,
+    updatedAt: j['updated_at'] != null
+        ? DateTime.parse(j['updated_at'] as String).toLocal()
+        : null,
   );
 }

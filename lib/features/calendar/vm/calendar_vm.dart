@@ -3,6 +3,8 @@ import '../../auth/data/auth_service.dart';
 import '../data/calendar_service.dart';
 import '../../mood/domain/mood.dart'; // ⬅️ để dùng Emotion5
 
+DateTime _normalize(DateTime d) => DateTime(d.year, d.month, d.day);
+
 class CalendarVM extends ChangeNotifier {
   final CalendarService _cal;
   final AuthService _auth;
@@ -77,4 +79,26 @@ class CalendarVM extends ChangeNotifier {
   bool hasMood(DateTime day) =>
       highlightEnabled &&
       moodDaysInMonth.contains(DateTime(day.year, day.month, day.day));
+
+  // ===================== ADD: CHẶN REACT NGÀY TƯƠNG LAI =====================
+
+  /// Ngày hôm nay (đã normalize về 00:00 local)
+  DateTime get today => _normalize(DateTime.now());
+
+  /// Trả về true nếu [day] nằm trong tương lai (so với hôm nay).
+  bool isFutureDay(DateTime day) => _normalize(day).isAfter(today);
+
+  /// Predicate dùng trực tiếp cho TableCalendar.selectableDayPredicate
+  /// Ví dụ: `selectableDayPredicate: context.read<CalendarVM>().isSelectableDay`
+  bool isSelectableDay(DateTime day) => !isFutureDay(day);
+
+  /// Kiểm tra trước khi mở màn hình react.
+  /// - null  → hợp lệ (được phép react)
+  /// - String → message lỗi để hiển thị (không cho react)
+  String? canReactOn(DateTime day) {
+    if (isFutureDay(day)) {
+      return 'Bạn không thể ghi mood cho ngày ở tương lai.';
+    }
+    return null;
+  }
 }

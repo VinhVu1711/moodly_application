@@ -89,6 +89,9 @@ class _StatsBodyState extends State<_StatsBody> {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: const [
+            // 🔥 Chip streak đặt ngay TRÊN MoodFlow
+            _StreakChip(),
+            SizedBox(height: 8),
             _Card(child: MoodFlowChart()),
             SizedBox(height: 12),
             _Card(child: MoodBarChart()),
@@ -111,6 +114,51 @@ class _Card extends StatelessWidget {
       elevation: 0.5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(padding: const EdgeInsets.all(16), child: child),
+    );
+  }
+}
+
+/// 🔥 Chip streak — dùng Selector để rebuild tối thiểu
+class _StreakChip extends StatelessWidget {
+  const _StreakChip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Selector<StatsVM, int>(
+        selector: (_, vm) => vm.currentStreak,
+        builder: (context, streak, __) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(
+                color: Theme.of(context).dividerColor.withOpacity(0.4),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.local_fire_department_rounded,
+                  color: Colors.orange,
+                  size: 18,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '$streak day${streak == 1 ? '' : 's'}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
