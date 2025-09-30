@@ -1,0 +1,89 @@
+{
+  "@@locale": "en",
+  "user_header_title": "Your account",
+  "@user_header_title": {
+    "description": "Header title on user page"
+  },
+  "section_account_info": "Account information",
+  "@section_account_info": {
+    "description": "Title of the account info section"
+  },
+  "field_email": "Email",
+  "@field_email": {
+    "description": "Label for email field"
+  },
+  "section_settings": "Settings",
+  "@section_settings": {
+    "description": "Title of the settings section"
+  },
+  "setting_language": "Language",
+  "@setting_language": {
+    "description": "Setting item: language"
+  },
+  "setting_language_vi": "Vietnamese",
+  "@setting_language_vi": {
+    "description": "Option label for Vietnamese language"
+  },
+  "setting_language_en": "English",
+  "@setting_language_en": {
+    "description": "Option label for English language"
+  },
+  "setting_theme": "Appearance",
+  "@setting_theme": {
+    "description": "Setting item: theme/appearance"
+  },
+  "setting_theme_system": "Follow system",
+  "@setting_theme_system": {
+    "description": "Theme option: follow system"
+  },
+  "setting_notifications": "Notifications",
+  "@setting_notifications": {
+    "description": "Setting item: notifications"
+  },
+  "setting_privacy": "Privacy & security",
+  "@setting_privacy": {
+    "description": "Setting item: privacy and security"
+  },
+  "section_about": "About",
+  "@section_about": {
+    "description": "Title of the about section"
+  },
+  "about_app_info": "App information",
+  "@about_app_info": {
+    "description": "Row title: app information"
+  },
+  "about_version": "Version {version}",
+  "@about_version": {
+    "description": "Version string with placeholder",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.0.0"
+      }
+    }
+  },
+  "about_help": "Help & Support",
+  "@about_help": {
+    "description": "Row title: help and support"
+  },
+  "logout": "Sign out",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "logout_confirm_title": "Confirm sign out",
+  "@logout_confirm_title": {
+    "description": "Title of the logout confirmation dialog"
+  },
+  "logout_confirm_msg": "Are you sure you want to sign out?",
+  "@logout_confirm_msg": {
+    "description": "Message of the logout confirmation dialog"
+  },
+  "btn_cancel": "Cancel",
+  "@btn_cancel": {
+    "description": "Common button: cancel"
+  },
+  "btn_ok": "Sign out",
+  "@btn_ok": {
+    "description": "Common button: OK/confirm sign out"
+  }
+}

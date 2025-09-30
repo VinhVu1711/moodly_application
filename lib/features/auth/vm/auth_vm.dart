@@ -1,31 +1,46 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:moodlyy_application/features/auth/data/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // User, Session
 
-/// 📌 ViewModel quản lý trạng thái đăng nhập/đăng ký
+/// 📌 ViewModel quản lý trạng thái đăng nhập/đăng ký + expose thông tin User
 class AuthVM extends ChangeNotifier {
   final AuthService _svc;
-  AuthVM(this._svc);
+  AuthVM(this._svc) {
+    // Lắng nghe thay đổi phiên đăng nhập để UI tự cập nhật (email, avatar...)
+    _sub = _svc.session$.listen((_) {
+      // Mỗi khi session thay đổi (đăng nhập/đăng xuất/refresh token) → rebuild UI
+      notifyListeners();
+    });
+  }
 
-  bool loading = false; //khai báo biến loading
-  String? error;
+  late final StreamSubscription _sub;
+
+  bool loading = false; // trạng thái quay vòng khi gọi API
+  String? error; // thông báo lỗi gần nhất (nếu có)
+
+  /// 👤 Lấy User hiện tại (null nếu chưa đăng nhập)
+  User? get user => _svc.currentSession?.user;
 
   /// 🧠 Đăng nhập → cập nhật loading + error
   Future<void> login(String email, String password) async {
-    loading = true; //loading bằng true để handle hiệu ứng quay tròn bên UI
-    error = null; //error chưa có gì hết
-    notifyListeners(); // báo UI là state đã đổi (loading = true)
+    loading = true;
+    error = null;
+    notifyListeners();
 
     try {
-      await _svc.login(email, password); //gọi đến xử lý đăng nhập
+      await _svc.login(email, password);
+      // session thay đổi -> listener ở trên sẽ notifyListeners() rồi
     } catch (e) {
       error = e.toString();
+      notifyListeners();
+    } finally {
+      loading = false;
+      notifyListeners();
     }
-
-    loading = false; //set lại biến loading để tắt hiệu ứng quay tròn bên UI
-    notifyListeners(); // báo UI update lại
   }
 
-  /// 🧠 Đăng ký tương tự
+  /// 🧠 Đăng ký
   Future<void> signup(String email, String password) async {
     loading = true;
     error = null;
@@ -35,18 +50,19 @@ class AuthVM extends ChangeNotifier {
       await _svc.signup(email, password);
     } catch (e) {
       error = e.toString();
+      notifyListeners();
+    } finally {
+      loading = false;
+      notifyListeners();
     }
-
-    loading = false;
-    notifyListeners();
   }
 
+  /// 🚪 Đăng xuất
   Future<void> signOut() async {
     try {
       await _svc.logout();
+      // session thay đổi -> listener ở trên sẽ notifyListeners()
     } catch (e) {
-      // Không bật loading để tránh UI nhấp nháy;
-      // chỉ lưu lỗi nếu cần hiển thị ở Settings chẳng hạn.
       error = e.toString();
       notifyListeners();
     }
@@ -58,5 +74,11 @@ class AuthVM extends ChangeNotifier {
       error = null;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel(); // tránh rò rỉ bộ nhớ
+    super.dispose();
   }
 }

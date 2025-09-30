@@ -1,0 +1,89 @@
+{
+  "@@locale": "vi",
+  "user_header_title": "Tài khoản của bạn",
+  "@user_header_title": {
+    "description": "Tiêu đề phần đầu trang người dùng"
+  },
+  "section_account_info": "Thông tin tài khoản",
+  "@section_account_info": {
+    "description": "Tiêu đề mục thông tin tài khoản"
+  },
+  "field_email": "Email",
+  "@field_email": {
+    "description": "Nhãn trường email"
+  },
+  "section_settings": "Cài đặt",
+  "@section_settings": {
+    "description": "Tiêu đề mục cài đặt"
+  },
+  "setting_language": "Ngôn ngữ",
+  "@setting_language": {
+    "description": "Mục cài đặt: ngôn ngữ"
+  },
+  "setting_language_vi": "Tiếng Việt",
+  "@setting_language_vi": {
+    "description": "Tùy chọn ngôn ngữ: Tiếng Việt"
+  },
+  "setting_language_en": "Tiếng Anh",
+  "@setting_language_en": {
+    "description": "Tùy chọn ngôn ngữ: Tiếng Anh"
+  },
+  "setting_theme": "Giao diện",
+  "@setting_theme": {
+    "description": "Mục cài đặt: giao diện"
+  },
+  "setting_theme_system": "Theo hệ thống",
+  "@setting_theme_system": {
+    "description": "Tùy chọn giao diện: theo hệ thống"
+  },
+  "setting_notifications": "Thông báo",
+  "@setting_notifications": {
+    "description": "Mục cài đặt: thông báo"
+  },
+  "setting_privacy": "Bảo mật & quyền riêng tư",
+  "@setting_privacy": {
+    "description": "Mục cài đặt: bảo mật và quyền riêng tư"
+  },
+  "section_about": "Về ứng dụng",
+  "@section_about": {
+    "description": "Tiêu đề mục giới thiệu ứng dụng"
+  },
+  "about_app_info": "Thông tin ứng dụng",
+  "@about_app_info": {
+    "description": "Dòng: thông tin ứng dụng"
+  },
+  "about_version": "Phiên bản {version}",
+  "@about_version": {
+    "description": "Chuỗi hiển thị phiên bản ứng dụng",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.0.0"
+      }
+    }
+  },
+  "about_help": "Trợ giúp & Hỗ trợ",
+  "@about_help": {
+    "description": "Dòng: trợ giúp và hỗ trợ"
+  },
+  "logout": "Đăng xuất",
+  "@logout": {
+    "description": "Nút đăng xuất"
+  },
+  "logout_confirm_title": "Xác nhận đăng xuất",
+  "@logout_confirm_title": {
+    "description": "Tiêu đề hộp thoại xác nhận đăng xuất"
+  },
+  "logout_confirm_msg": "Bạn có chắc chắn muốn đăng xuất?",
+  "@logout_confirm_msg": {
+    "description": "Nội dung hộp thoại xác nhận đăng xuất"
+  },
+  "btn_cancel": "Hủy",
+  "@btn_cancel": {
+    "description": "Nút chung: hủy"
+  },
+  "btn_ok": "Đăng xuất",
+  "@btn_ok": {
+    "description": "Nút chung: đồng ý/đăng xuất"
+  }
+}

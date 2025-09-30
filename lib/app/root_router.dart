@@ -14,7 +14,12 @@ import 'package:moodlyy_application/features/main_shell/presentation/app_shell.d
 import 'package:moodlyy_application/features/auth/data/auth_service.dart';
 import 'package:moodlyy_application/features/onboarding/presentation/intro_splash_page.dart';
 
-// ✅ Helper: Stream -> Listenable để dùng cho refreshListenable
+// NEW: import i18n + LocaleVM
+import 'package:moodlyy_application/l10n/app_localizations.dart';
+
+import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
+
+/// ✅ Helper: Stream -> Listenable để dùng cho refreshListenable
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     _sub = stream.listen((_) => notifyListeners());
@@ -27,7 +32,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
   }
 }
 
-// ⬇️ Listener dọn cache khi session đổi
+/// ⬇️ Listener dọn cache khi session đổi
 class AuthSessionListener extends StatefulWidget {
   final Widget child;
   const AuthSessionListener({super.key, required this.child});
@@ -59,16 +64,39 @@ class _AuthSessionListenerState extends State<AuthSessionListener> {
   Widget build(BuildContext context) => widget.child;
 }
 
-class RootRouter extends StatelessWidget {
+/// 🔒 Giữ GoRouter 1 instance: tránh restart về /splash khi đổi locale
+class RootRouter extends StatefulWidget {
   const RootRouter({super.key});
 
   @override
+  State<RootRouter> createState() => _RootRouterState();
+}
+
+class _RootRouterState extends State<RootRouter> {
+  GoRouter? _router;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Khởi tạo router duy nhất khi lần đầu có AuthService trong context
+    _router ??= _buildRouter(context.read<AuthService>());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final router = _buildRouter(context);
+    final locale = context
+        .watch<LocaleVM>()
+        .locale; // đổi ngôn ngữ → rebuild MaterialApp, KHÔNG tạo router mới
+
     return AuthSessionListener(
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        routerConfig: router,
+        routerConfig: _router!, // <-- giữ nguyên instance
+        // i18n
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: locale,
+
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: const Color(0xFF90B7C2),
@@ -91,41 +119,39 @@ class RootRouter extends StatelessWidget {
       ),
     );
   }
-}
 
-GoRouter _buildRouter(BuildContext context) {
-  final auth = context.read<AuthService>();
+  GoRouter _buildRouter(AuthService auth) {
+    return GoRouter(
+      initialLocation: '/splash',
+      refreshListenable: GoRouterRefreshStream(auth.session$),
+      routes: [
+        GoRoute(path: '/splash', builder: (_, __) => const IntroSplashPage()),
+        GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
 
-  return GoRouter(
-    initialLocation: '/splash',
-    refreshListenable: GoRouterRefreshStream(auth.session$),
-    routes: [
-      GoRoute(path: '/splash', builder: (_, __) => const IntroSplashPage()),
-      GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+        // Home (tab Lịch mặc định)
+        GoRoute(path: '/', builder: (_, __) => const AppShell()),
 
-      // Home (tab Lịch mặc định)
-      GoRoute(path: '/', builder: (_, __) => const AppShell()),
+        // deep-link vào tab Biểu đồ
+        GoRoute(
+          path: '/stats',
+          builder: (_, __) => const AppShell(initialIndex: 1),
+        ),
 
-      // NEW: deep-link vào tab Biểu đồ
-      GoRoute(
-        path: '/stats',
-        builder: (_, __) => const AppShell(initialIndex: 1),
-      ),
-
-      GoRoute(
-        path: '/mood/new',
-        builder: (_, state) =>
-            MoodEditPage(day: (state.extra as DateTime?) ?? DateTime.now()),
-      ),
-    ],
-    redirect: (ctx, state) {
-      final session = auth.currentSession;
-      final atSplash = state.matchedLocation == '/splash';
-      final atLogin = state.matchedLocation == '/login';
-      if (atSplash) return null;
-      if (session == null) return atLogin ? null : '/login';
-      if (atLogin) return '/';
-      return null;
-    },
-  );
+        GoRoute(
+          path: '/mood/new',
+          builder: (_, state) =>
+              MoodEditPage(day: (state.extra as DateTime?) ?? DateTime.now()),
+        ),
+      ],
+      redirect: (ctx, state) {
+        final session = auth.currentSession;
+        final atSplash = state.matchedLocation == '/splash';
+        final atLogin = state.matchedLocation == '/login';
+        if (atSplash) return null;
+        if (session == null) return atLogin ? null : '/login';
+        if (atLogin) return '/';
+        return null;
+      },
+    );
+  }
 }

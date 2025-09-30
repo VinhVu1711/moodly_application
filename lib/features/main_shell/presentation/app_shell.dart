@@ -1,48 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
-import 'package:moodlyy_application/features/auth/vm/auth_vm.dart';
 import 'package:moodlyy_application/features/calendar/presentation/calendar_page.dart';
-
-// NEW: import StatsPage thật
 import 'package:moodlyy_application/features/stats/presentation/stats_page.dart';
 
-// Giữ 2 stub còn lại cho tới khi em làm xong
-class FavoritesPage extends StatelessWidget {
-  const FavoritesPage({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Favorites (coming soon)'));
-}
-
-class UserPage extends StatelessWidget {
-  const UserPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const ListTile(
-          leading: CircleAvatar(child: Icon(Icons.person)),
-          title: Text('Tài khoản của bạn'),
-          subtitle: Text('VN/EN • Light/Dark • Thông báo'),
-        ),
-        const Divider(),
-        ListTile(
-          leading: const Icon(Icons.logout),
-          title: const Text('Đăng xuất'),
-          onTap: () async {
-            await context.read<AuthVM>().signOut();
-          },
-        ),
-      ],
-    );
-  }
-}
+// NEW: tách thành file riêng
+import 'package:moodlyy_application/features/ai/presentation/ai_page.dart';
+import 'package:moodlyy_application/features/user/presentation/user_page.dart';
 
 class AppShell extends StatefulWidget {
-  // NEW: cho phép mở thẳng 1 tab (vd: /stats -> index 1)
   final int initialIndex;
   const AppShell({super.key, this.initialIndex = 0});
 
@@ -53,28 +19,28 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   late int _index;
 
-  // Màu seed (mint) của app — dùng cho nhấn nhá
+  // seed color nhấn nhá
   static const mint = Color(0xFF90B7C2);
 
   @override
   void initState() {
     super.initState();
-    _index = widget.initialIndex; // NEW
+    _index = widget.initialIndex;
   }
 
   late final List<Widget> _pages = const [
-    CalendarPage(), // 0 - Lịch
-    StatsPage(), // 1 - Biểu đồ (THẬT)
-    SizedBox(), // 2 - Mặt cười (push /mood/new)
-    FavoritesPage(), // 3 - Yêu thích
-    UserPage(), // 4 - Người dùng
+    CalendarPage(), // 0
+    StatsPage(), // 1
+    SizedBox(), // 2 (nút mood ở giữa)
+    AiPage(), // 3  <-- đổi từ Favorites -> AI
+    UserPage(), // 4
   ];
 
   void _onNavTap(int i) {
     if (i == 2) {
-      // Tab Mặt cười: mở trang react mood nhanh
+      // nút mood nhanh
       context.push('/mood/new');
-      return; // không đổi tab hiện tại
+      return;
     }
     setState(() => _index = i);
   }
@@ -82,10 +48,7 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _index,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _index, children: _pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: _onNavTap,
@@ -106,10 +69,11 @@ class _AppShellState extends State<AppShell> {
             selectedIcon: Icon(Icons.sentiment_satisfied),
             label: 'Mood',
           ),
+          // ĐỔI: tab AI
           NavigationDestination(
-            icon: Icon(Icons.favorite_border),
-            selectedIcon: Icon(Icons.favorite),
-            label: 'Yêu thích',
+            icon: Icon(Icons.auto_awesome_outlined), // gợi ý icon AI
+            selectedIcon: Icon(Icons.auto_awesome),
+            label: 'AI',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),

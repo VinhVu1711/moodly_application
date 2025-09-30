@@ -10,6 +10,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // NEW: import StatsVM
 import 'package:moodlyy_application/features/stats/vm/stats_vm.dart';
 
+// NEW: import LocaleVM (Provider quản lý ngôn ngữ)
+import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
+
 List<SingleChildWidget> buildProviders() => [
   // 1) Supabase client
   Provider<SupabaseClient>(create: (_) => Supabase.instance.client),
@@ -29,6 +32,12 @@ List<SingleChildWidget> buildProviders() => [
   ChangeNotifierProvider<AuthVM>(
     create: (ctx) => AuthVM(ctx.read<AuthService>()),
   ),
+
+  // NEW: LocaleVM dùng cho i18n (load ngôn ngữ đã lưu)
+  ChangeNotifierProvider<LocaleVM>(
+    create: (_) => LocaleVM()..load(),
+  ),
+
   ProxyProvider<SupabaseClient, CalendarService>(
     update: (_, sp, __) => CalendarService(sp),
   ),
