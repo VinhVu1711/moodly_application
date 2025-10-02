@@ -1,5 +1,13 @@
 {
   "@@locale": "vi",
+  "rule_in_arb": "",
+  "@rule_in_arb": {
+    "description": "If just modify the content -> hot restart, If add key or placeholder -> flutter gen-l10n or stop the app and flutter run. DO NOT MODIFY THE GENERATED FILE"
+  },
+  "user_page_section": "Cá nhân",
+  "@user_page_section": {
+    "description": "Nhãn của Icon cá nhân"
+  },
   "user_header_title": "Tài khoản của bạn",
   "@user_header_title": {
     "description": "Tiêu đề phần đầu trang người dùng"
@@ -40,9 +48,17 @@
   "@setting_notifications": {
     "description": "Mục cài đặt: thông báo"
   },
+  "setting_notifications_subtitle": "Cài đặt thông báo của bạn",
+  "@setting_notifications_subtitle": {
+    "description": "Phần phụ đề của thông báo"
+  },
   "setting_privacy": "Bảo mật & quyền riêng tư",
   "@setting_privacy": {
     "description": "Mục cài đặt: bảo mật và quyền riêng tư"
+  },
+  "setting_privacy_title": "Bảo vệ tài khoản của bạn",
+  "@setting_privacy_title": {
+    "description": "Phần phụ đề của bảo mật và quyền riêng tư"
   },
   "section_about": "Về ứng dụng",
   "@section_about": {
@@ -85,5 +101,237 @@
   "btn_ok": "Đăng xuất",
   "@btn_ok": {
     "description": "Nút chung: đồng ý/đăng xuất"
+  },
+  "home_page_section": "Lịch",
+  "@home_page_section": {
+    "description": "Nhãn Icon lịch"
+  },
+  "sort_by_emotion_title": "Lọc theo cảm xúc",
+  "@sort_by_emotion_title": {
+    "description": "Nhãn của chức năng lọc"
+  },
+  "cancel_button_title": "Hủy",
+  "@cancel_button_title": {
+    "description": "Nhãn dán của nút hủy"
+  },
+  "apply_button_title": "Áp dụng",
+  "@apply_button_title": {
+    "description": "Nhãn dán của nút áp dụng"
+  },
+  "quote_label": "Câu nói ngày hôm nay",
+  "@quote_label": {
+    "description": "Nhãn dán của phần câu nói"
+  },
+  "close_button_title": "Đóng",
+  "@close_button_title": {
+    "description": "Nhãn dán của nút đóng"
+  },
+  "stat_page_section": "Thống kê",
+  "@stat_page_section": {
+    "description": "Label of stat section"
+  },
+  "month_title": "Tháng",
+  "@month_title": {
+    "description": "Month title"
+  },
+  "year_title": "Năm",
+  "@year_title": {
+    "description": "Year title"
+  },
+  "dont_have_data_title": "Không có dữ liệu trong phạm vi này",
+  "@dont_have_data_title": {
+    "description": "Dont have data title"
+  },
+  "streak_days": "{count, plural,=0{chưa có ngày nào} other{{count} ngày}}",
+  "@streak_days": {
+    "description": "Hiển thị số ngày streak",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "pick_year_title": "Chọn năm",
+  "@pick_year_title": {
+    "description": "Title"
+  },
+  "mood_flow_title": "Dòng chảy",
+  "@mood_flow_title": {
+    "description": "title"
+  },
+  "mood_flow_year_title": "Hành trình của bạn trong năm nay",
+  "@mood_flow_year_title": {
+    "description": "title"
+  },
+  "mood_flow_month_title": "Hành trình của bạn trong tháng này",
+  "@mood_flow_month_title": {
+    "description": "title"
+  },
+  "months_count": "{count, plural, =0{chưa có tháng nào} =1{1 tháng} other{{count} tháng}}",
+  "@months_count": {
+    "description": "Render month count with proper pluralization",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "days_count": "{count, plural, =0{Chưa có ngày nào} =1{1 ngày} other{{count} ngày}}",
+  "@days_count": {
+    "description": "Render day count with proper pluralization",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "mood_flow_emotions_title": "Cảm xúc",
+  "@mood_flow_emotions_title": {
+    "description": "title"
+  },
+  "mood_distribution_title": "Phân phối cảm xúc",
+  "@mood_distribution_title": {
+    "description": "title"
+  },
+  "most_common_with": "Phổ biến: {emotion}",
+  "@most_common_with": {
+    "description": "Label for the most common emotion",
+    "placeholders": {
+      "emotion": {
+        "type": "String",
+        "example": "Happy"
+      }
+    }
+  },
+  "emotion_very_sad": "Rất buồn",
+  "@emotion_very_sad": {
+    "description": "title"
+  },
+  "emotion_sad": "Buồn",
+  "@emotion_sad": {
+    "description": "title"
+  },
+  "emotion_neutral": "Bình thường",
+  "@emotion_neutral": {
+    "description": "title"
+  },
+  "emotion_happy": "Vui",
+  "@emotion_happy": {
+    "description": "title"
+  },
+  "emotion_very_happy": "Rất vui",
+  "@emotion_very_happy": {
+    "description": "title"
+  },
+  "people_stranger": "Người lạ",
+  "@people_stranger": {
+    "description": "title"
+  },
+  "people_family": "Gia đình",
+  "@people_family": {
+    "description": "title"
+  },
+  "people_friends": "Bạn bè",
+  "@people_friends": {
+    "description": "title"
+  },
+  "people_partner": "Đồng nghiệp",
+  "@people_partner": {
+    "description": "title"
+  },
+  "people_lover": "Người yêu",
+  "@people_lover": {
+    "description": "title"
+  },
+  "another_excited": "Hào hứng",
+  "@another_excited": {
+    "description": "Cảm xúc phụ: hào hứng"
+  },
+  "another_relaxed": "Thư giãn",
+  "@another_relaxed": {
+    "description": "Cảm xúc phụ: thư giãn"
+  },
+  "another_proud": "Tự hào",
+  "@another_proud": {
+    "description": "Cảm xúc phụ: tự hào"
+  },
+  "another_hopeful": "Hy vọng",
+  "@another_hopeful": {
+    "description": "Cảm xúc phụ: hy vọng"
+  },
+  "another_happy": "Vui vẻ",
+  "@another_happy": {
+    "description": "Cảm xúc phụ: vui vẻ"
+  },
+  "another_enthusiastic": "Nhiệt huyết",
+  "@another_enthusiastic": {
+    "description": "Cảm xúc phụ: nhiệt huyết"
+  },
+  "another_pit_a_part": "Rã rời",
+  "@another_pit_a_part": {
+    "description": "Cảm xúc phụ: 'pit-a-part' (khớp asset pit-a-part.png); dịch gợi ý: Rã rời"
+  },
+  "another_refreshed": "Sảng khoái",
+  "@another_refreshed": {
+    "description": "Cảm xúc phụ: sảng khoái"
+  },
+  "another_depressed": "Buồn bã",
+  "@another_depressed": {
+    "description": "Cảm xúc phụ: buồn bã"
+  },
+  "another_lonely": "Cô đơn",
+  "@another_lonely": {
+    "description": "Cảm xúc phụ: cô đơn"
+  },
+  "another_anxious": "Lo âu",
+  "@another_anxious": {
+    "description": "Cảm xúc phụ: lo âu"
+  },
+  "another_sad": "Buồn",
+  "@another_sad": {
+    "description": "Cảm xúc phụ: buồn"
+  },
+  "another_angry": "Tức giận",
+  "@another_angry": {
+    "description": "Cảm xúc phụ: tức giận"
+  },
+  "another_pressured": "Áp lực",
+  "@another_pressured": {
+    "description": "Cảm xúc phụ: áp lực"
+  },
+  "another_annoyed": "Khó chịu",
+  "@another_annoyed": {
+    "description": "Cảm xúc phụ: khó chịu"
+  },
+  "another_tired": "Mệt mỏi",
+  "@another_tired": {
+    "description": "Cảm xúc phụ: mệt mỏi"
+  },
+  "overall_balance_title": "Tỉ lệ",
+  "@overall_balance_title": {
+    "description": "title"
+  },
+  "dominated_by": "Đa số là: {emotion}",
+  "@dominated_by": {
+    "description": "Label for the dominated by",
+    "placeholders": {
+      "emotion": {
+        "type": "String",
+        "example": "Happy"
+      }
+    }
+  },
+  "days_with_mood_in_month_count": "{count, plural, =0{Chưa có ngày nào} =1{1 day} other{Tổng: {count} ngày ghi cảm xúc }}",
+  "@days_with_mood_in_month_count": {
+    "description": "Render day count with proper pluralization",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
   }
 }

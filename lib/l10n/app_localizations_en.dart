@@ -9,6 +9,12 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get rule_in_arb => '';
+
+  @override
+  String get user_page_section => 'User';
+
+  @override
   String get user_header_title => 'Your account';
 
   @override
@@ -39,7 +45,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setting_notifications => 'Notifications';
 
   @override
+  String get setting_notifications_subtitle => 'Your notification settings';
+
+  @override
   String get setting_privacy => 'Privacy & security';
+
+  @override
+  String get setting_privacy_title => 'Protect your account';
 
   @override
   String get section_about => 'About';
@@ -69,4 +81,191 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get btn_ok => 'Sign out';
+
+  @override
+  String get home_page_section => 'Calendar';
+
+  @override
+  String get sort_by_emotion_title => 'Sort by main emotion';
+
+  @override
+  String get cancel_button_title => 'Cancel';
+
+  @override
+  String get apply_button_title => 'Apply';
+
+  @override
+  String get quote_label => 'Quote of today';
+
+  @override
+  String get close_button_title => 'Close';
+
+  @override
+  String get stat_page_section => 'Stat';
+
+  @override
+  String get month_title => 'Month';
+
+  @override
+  String get year_title => 'Year';
+
+  @override
+  String get dont_have_data_title => 'Uh...Sorry don\'t have data in this range';
+
+  @override
+  String streak_days(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+      zero: '0 days',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pick_year_title => 'Pick a year';
+
+  @override
+  String get mood_flow_title => 'Mood Flow';
+
+  @override
+  String get mood_flow_year_title => 'Your emotional journey this year';
+
+  @override
+  String get mood_flow_month_title => 'Your emotional journey this month';
+
+  @override
+  String months_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+      zero: '0 months',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String days_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+      zero: '0 days',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mood_flow_emotions_title => 'Emotions';
+
+  @override
+  String get mood_distribution_title => 'Mood Distribution';
+
+  @override
+  String most_common_with(String emotion) {
+    return 'Most common: $emotion';
+  }
+
+  @override
+  String get emotion_very_sad => 'Very sad';
+
+  @override
+  String get emotion_sad => 'Sad';
+
+  @override
+  String get emotion_neutral => 'Neutral';
+
+  @override
+  String get emotion_happy => 'Happy';
+
+  @override
+  String get emotion_very_happy => 'Very happy';
+
+  @override
+  String get people_stranger => 'Stranger';
+
+  @override
+  String get people_family => 'Family';
+
+  @override
+  String get people_friends => 'Friends';
+
+  @override
+  String get people_partner => 'Partner';
+
+  @override
+  String get people_lover => 'Lover';
+
+  @override
+  String get another_excited => 'Excited';
+
+  @override
+  String get another_relaxed => 'Relaxed';
+
+  @override
+  String get another_proud => 'Proud';
+
+  @override
+  String get another_hopeful => 'Hopeful';
+
+  @override
+  String get another_happy => 'Happy';
+
+  @override
+  String get another_enthusiastic => 'Enthusiastic';
+
+  @override
+  String get another_pit_a_part => 'Pit-a-part';
+
+  @override
+  String get another_refreshed => 'Refreshed';
+
+  @override
+  String get another_depressed => 'Depressed';
+
+  @override
+  String get another_lonely => 'Lonely';
+
+  @override
+  String get another_anxious => 'Anxious';
+
+  @override
+  String get another_sad => 'Sad';
+
+  @override
+  String get another_angry => 'Angry';
+
+  @override
+  String get another_pressured => 'Pressured';
+
+  @override
+  String get another_annoyed => 'Annoyed';
+
+  @override
+  String get another_tired => 'Tired';
+
+  @override
+  String get overall_balance_title => 'Overall Balance';
+
+  @override
+  String dominated_by(String emotion) {
+    return 'Dominated by: $emotion';
+  }
+
+  @override
+  String days_with_mood_in_month_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'TotalMood: $count day with mood ',
+      one: '1 day',
+      zero: 'Don\'t have yet',
+    );
+    return '$_temp0';
+  }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
+import 'package:moodlyy_application/features/mood/presentation/mood_l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -70,22 +72,21 @@ class MoodFlowChart extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Mood Flow',
+                        Text(
+                          context.l10n.mood_flow_title,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
-                        Text(
-                          isYearMode
-                              ? 'Your emotional journey this year'
-                              : 'Your emotional journey this month',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
+                        // Text(
+                        //   // Giữ nguyên text gốc (UI/logic không đổi)
+                        //   'Your emotional journey this year', // sẽ thay đổi bên dưới theo isYearMode
+                        //   style: TextStyle(
+                        //     fontSize: 12,
+                        //     color: Color(0xFF757575),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -101,7 +102,9 @@ class MoodFlowChart extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      isYearMode ? '$fullMonths months' : '$reactedDays days',
+                      isYearMode
+                          ? context.l10n.months_count(fullMonths)
+                          : context.l10n.days_count(reactedDays),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -111,12 +114,29 @@ class MoodFlowChart extends StatelessWidget {
                   ),
                 ],
               ),
+
+              // Ghi chú phụ (month/year) – giữ nguyên logic & UI
+              const SizedBox(height: 4),
+              Builder(
+                builder: (ctx) {
+                  return Text(
+                    isYearMode
+                        ? ctx.l10n.mood_flow_year_title
+                        : ctx.l10n.mood_flow_month_title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  );
+                },
+              ),
+
               const SizedBox(height: 16),
 
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(flex: 0, child: _CompactMoodLegend()),
+                  const Flexible(flex: 0, child: _CompactMoodLegend()),
                   const SizedBox(width: 12),
                   Expanded(
                     child: SizedBox(
@@ -342,7 +362,7 @@ class MoodFlowChart extends StatelessWidget {
                                     ];
                                     final monthIndex = spot.x.toInt();
                                     return LineTooltipItem(
-                                      '${monthNames[monthIndex]}\n${_getEmotionLabel(emotion)}',
+                                      '${monthNames[monthIndex]}\n${emotion.label}', // dùng label từ model
                                       const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
@@ -351,7 +371,7 @@ class MoodFlowChart extends StatelessWidget {
                                   } else {
                                     final day = spot.x.toInt();
                                     return LineTooltipItem(
-                                      'Day $day\n${_getEmotionLabel(emotion)}',
+                                      'Day $day\n${emotion.label}', // dùng label từ model
                                       const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
@@ -382,34 +402,15 @@ class MoodFlowChart extends StatelessWidget {
     if (value >= -1.5) return Emotion5.sad;
     return Emotion5.verySad;
   }
-
-  String _getEmotionLabel(Emotion5 emotion) {
-    switch (emotion) {
-      case Emotion5.veryHappy:
-        return 'Very Happy';
-      case Emotion5.happy:
-        return 'Happy';
-      case Emotion5.neutral:
-        return 'Neutral';
-      case Emotion5.sad:
-        return 'Sad';
-      case Emotion5.verySad:
-        return 'Very Sad';
-    }
-  }
 }
 
 // Compact legend to fix overflow issue
 class _CompactMoodLegend extends StatelessWidget {
+  const _CompactMoodLegend();
+
   @override
   Widget build(BuildContext context) {
-    final emotions = [
-      (Emotion5.veryHappy, 'Very Happy'),
-      (Emotion5.happy, 'Happy'),
-      (Emotion5.neutral, 'Neutral'),
-      (Emotion5.sad, 'Sad'),
-      (Emotion5.verySad, 'Very Sad'),
-    ];
+    final items = Emotion5.values; // dùng enum trực tiếp
 
     return Container(
       width: 90,
@@ -422,7 +423,7 @@ class _CompactMoodLegend extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Emotions',
+            context.l10n.mood_flow_emotions_title,
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w600,
@@ -430,7 +431,7 @@ class _CompactMoodLegend extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          for (final (emotion, label) in emotions) ...[
+          for (final emotion in items) ...[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2),
               child: Row(
@@ -454,7 +455,7 @@ class _CompactMoodLegend extends StatelessWidget {
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(
-                      label,
+                      emotion.l10n(context), // tái dùng label từ model
                       style: const TextStyle(fontSize: 9),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,

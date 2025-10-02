@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
 import 'package:moodlyy_application/features/mood/vm/mood_vm.dart';
 import 'package:provider/provider.dart';
 
@@ -80,10 +81,10 @@ class _StatsBodyState extends State<_StatsBody> {
 
     return Selector<StatsVM, int>(
       selector: (_, vm) => vm.total,
-      builder: (_, total, __) {
+      builder: (ctx, total, __) {
         if (total == 0) {
-          return const Center(
-            child: Text('Chưa có dữ liệu trong phạm vi đã chọn'),
+          return Center(
+            child: Text(ctx.l10n.dont_have_data_title),
           );
         }
         return ListView(
@@ -148,7 +149,7 @@ class _StreakChip extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '$streak day${streak == 1 ? '' : 's'}',
+                  context.l10n.days_count(streak),
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -271,7 +272,7 @@ Future<int?> _pickYear(BuildContext context, int currentYear) async {
     context: context,
     builder: (ctx) {
       return AlertDialog(
-        title: const Text('Chọn năm'),
+        title: Text(ctx.l10n.pick_year_title),
         content: SizedBox(
           height: 200,
           width: 300,

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
+import 'package:moodlyy_application/features/mood/presentation/mood_l10n.dart';
 import 'package:provider/provider.dart';
+
 import '../../vm/stats_vm.dart';
 import '../../../mood/domain/mood.dart';
 
@@ -65,8 +68,8 @@ class MoodBarChart extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Mood Distribution',
+                      Text(
+                        context.l10n.mood_distribution_title,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -74,7 +77,7 @@ class MoodBarChart extends StatelessWidget {
                       ),
                       Text(
                         hasData
-                            ? 'Most common: ${_getEmotionLabel(topEntry.key)}'
+                            ? context.l10n.most_common_with(topEntry.key.label)
                             : 'No data available',
                         style: TextStyle(
                           fontSize: 12,
@@ -114,7 +117,7 @@ class MoodBarChart extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Overall Balance',
+                        context.l10n.overall_balance_title,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: Colors.grey[700],
@@ -131,7 +134,7 @@ class MoodBarChart extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Dominated by ${_getEmotionLabel(topEntry.key)}',
+                            context.l10n.dominated_by(topEntry.key.label),
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
@@ -159,21 +162,6 @@ class MoodBarChart extends StatelessWidget {
       },
     );
   }
-
-  String _getEmotionLabel(Emotion5 emotion) {
-    switch (emotion) {
-      case Emotion5.veryHappy:
-        return 'Very Happy';
-      case Emotion5.happy:
-        return 'Happy';
-      case Emotion5.neutral:
-        return 'Neutral';
-      case Emotion5.sad:
-        return 'Sad';
-      case Emotion5.verySad:
-        return 'Very Sad';
-    }
-  }
 }
 
 class _EnhancedMoodPercentItem extends StatelessWidget {
@@ -186,14 +174,6 @@ class _EnhancedMoodPercentItem extends StatelessWidget {
     required this.percent,
     required this.highlighted,
   });
-
-  String get _assetPath => switch (emotion) {
-    Emotion5.veryHappy => 'assets/emotion/veryhappy.png',
-    Emotion5.happy => 'assets/emotion/happy.png',
-    Emotion5.neutral => 'assets/emotion/neutral.png',
-    Emotion5.sad => 'assets/emotion/sad-face.png',
-    Emotion5.verySad => 'assets/emotion/verysad.png',
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +206,7 @@ class _EnhancedMoodPercentItem extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.all(highlighted ? 8 : 6),
                 child: Image.asset(
-                  _assetPath,
+                  emotion.assetPath, // dùng assetPath từ model
                   fit: BoxFit.contain,
                   width: highlighted ? 32 : 28,
                   height: highlighted ? 32 : 28,
@@ -276,7 +256,7 @@ class _EnhancedMoodPercentItem extends StatelessWidget {
           if (highlighted) ...[
             const SizedBox(height: 4),
             Text(
-              _getEmotionName(emotion),
+              emotion.l10n(context), // tái dùng label từ model
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
@@ -287,21 +267,6 @@ class _EnhancedMoodPercentItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _getEmotionName(Emotion5 emotion) {
-    switch (emotion) {
-      case Emotion5.veryHappy:
-        return 'Very Happy';
-      case Emotion5.happy:
-        return 'Happy';
-      case Emotion5.neutral:
-        return 'Neutral';
-      case Emotion5.sad:
-        return 'Sad';
-      case Emotion5.verySad:
-        return 'Very Sad';
-    }
   }
 }
 
@@ -324,7 +289,6 @@ class _EnhancedStackedPill extends StatelessWidget {
         final w = constraints.maxWidth;
         final children = <Widget>[];
         double offset = 0;
-        //final totalPercent = percents.values.fold(0.0, (sum, p) => sum + p);
 
         for (final k in keys) {
           final p = (percents[k] ?? 0).clamp(0, 100) / 100.0;
@@ -340,7 +304,7 @@ class _EnhancedStackedPill extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: k.color,
-                  // Add subtle gradient for depth
+                  // Subtle gradient for depth
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -350,9 +314,7 @@ class _EnhancedStackedPill extends StatelessWidget {
                     ],
                   ),
                 ),
-                child:
-                    segW >
-                        30 // Only show percentage if segment is wide enough
+                child: segW > 30
                     ? Center(
                         child: Text(
                           '${(p * 100).toStringAsFixed(0)}%',
@@ -396,7 +358,7 @@ class _EnhancedStackedPill extends StatelessWidget {
               child: Stack(
                 children: [
                   ...children,
-                  // Add subtle inner shadow for depth
+                  // Subtle inner shadow for depth
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(24),

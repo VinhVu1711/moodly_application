@@ -1,5 +1,13 @@
 {
   "@@locale": "en",
+  "rule_in_arb": "",
+  "@rule_in_arb": {
+    "description": "If just modify the content -> hot restart, If add key or placeholder -> flutter gen-l10n or stop the app and flutter run. DO NOT MODIFY THE GENERATED FILE"
+  },
+  "user_page_section": "User",
+  "@user_page_section": {
+    "description": "User Page Section"
+  },
   "user_header_title": "Your account",
   "@user_header_title": {
     "description": "Header title on user page"
@@ -40,9 +48,17 @@
   "@setting_notifications": {
     "description": "Setting item: notifications"
   },
+  "setting_notifications_subtitle": "Your notification settings",
+  "@setting_notifications_subtitle": {
+    "description": "The subtitle of notification"
+  },
   "setting_privacy": "Privacy & security",
   "@setting_privacy": {
     "description": "Setting item: privacy and security"
+  },
+  "setting_privacy_title": "Protect your account",
+  "@setting_privacy_title": {
+    "description": "The subtitle of privacy and security"
   },
   "section_about": "About",
   "@section_about": {
@@ -85,5 +101,237 @@
   "btn_ok": "Sign out",
   "@btn_ok": {
     "description": "Common button: OK/confirm sign out"
+  },
+  "home_page_section": "Calendar",
+  "@home_page_section": {
+    "description": "Label of calendar section"
+  },
+  "sort_by_emotion_title": "Sort by main emotion",
+  "@sort_by_emotion_title": {
+    "description": "Label of sort"
+  },
+  "cancel_button_title": "Cancel",
+  "@cancel_button_title": {
+    "description": "Label of button"
+  },
+  "apply_button_title": "Apply",
+  "@apply_button_title": {
+    "description": "Label"
+  },
+  "quote_label": "Quote of today",
+  "@quote_label": {
+    "description": "Label"
+  },
+  "close_button_title": "Close",
+  "@close_button_title": {
+    "description": "Label of button"
+  },
+  "stat_page_section": "Stat",
+  "@stat_page_section": {
+    "description": "Label of stat section"
+  },
+  "month_title": "Month",
+  "@month_title": {
+    "description": "Month title"
+  },
+  "year_title": "Year",
+  "@year_title": {
+    "description": "Year title"
+  },
+  "dont_have_data_title": "Uh...Sorry don't have data in this range",
+  "@dont_have_data_title": {
+    "description": "Dont have data title"
+  },
+  "streak_days": "{count, plural, =0{0 days} =1{1 day} other{{count} days}}",
+  "@streak_days": {
+    "description": "Render streak length in days with proper pluralization",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "pick_year_title": "Pick a year",
+  "@pick_year_title": {
+    "description": "Title"
+  },
+  "mood_flow_title": "Mood Flow",
+  "@mood_flow_title": {
+    "description": "title"
+  },
+  "mood_flow_year_title": "Your emotional journey this year",
+  "@mood_flow_year_title": {
+    "description": "title"
+  },
+  "mood_flow_month_title": "Your emotional journey this month",
+  "@mood_flow_month_title": {
+    "description": "title"
+  },
+  "months_count": "{count, plural, =0{0 months} =1{1 month} other{{count} months}}",
+  "@months_count": {
+    "description": "Render month count with proper pluralization",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "days_count": "{count, plural, =0{0 days} =1{1 day} other{{count} days}}",
+  "@days_count": {
+    "description": "Render day count with proper pluralization",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "mood_flow_emotions_title": "Emotions",
+  "@mood_flow_emotions_title": {
+    "description": "title"
+  },
+  "mood_distribution_title": "Mood Distribution",
+  "@mood_distribution_title": {
+    "description": "title"
+  },
+  "most_common_with": "Most common: {emotion}",
+  "@most_common_with": {
+    "description": "Label for the most common emotion",
+    "placeholders": {
+      "emotion": {
+        "type": "String",
+        "example": "Happy"
+      }
+    }
+  },
+  "emotion_very_sad": "Very sad",
+  "@emotion_very_sad": {
+    "description": "title"
+  },
+  "emotion_sad": "Sad",
+  "@emotion_sad": {
+    "description": "title"
+  },
+  "emotion_neutral": "Neutral",
+  "@emotion_neutral": {
+    "description": "title"
+  },
+  "emotion_happy": "Happy",
+  "@emotion_happy": {
+    "description": "title"
+  },
+  "emotion_very_happy": "Very happy",
+  "@emotion_very_happy": {
+    "description": "title"
+  },
+  "people_stranger": "Stranger",
+  "@people_stranger": {
+    "description": "title"
+  },
+  "people_family": "Family",
+  "@people_family": {
+    "description": "title"
+  },
+  "people_friends": "Friends",
+  "@people_friends": {
+    "description": "title"
+  },
+  "people_partner": "Partner",
+  "@people_partner": {
+    "description": "title"
+  },
+  "people_lover": "Lover",
+  "@people_lover": {
+    "description": "title"
+  },
+  "another_excited": "Excited",
+  "@another_excited": {
+    "description": "Secondary emotion: excited"
+  },
+  "another_relaxed": "Relaxed",
+  "@another_relaxed": {
+    "description": "Secondary emotion: relaxed"
+  },
+  "another_proud": "Proud",
+  "@another_proud": {
+    "description": "Secondary emotion: proud"
+  },
+  "another_hopeful": "Hopeful",
+  "@another_hopeful": {
+    "description": "Secondary emotion: hopeful"
+  },
+  "another_happy": "Happy",
+  "@another_happy": {
+    "description": "Secondary emotion: happy"
+  },
+  "another_enthusiastic": "Enthusiastic",
+  "@another_enthusiastic": {
+    "description": "Secondary emotion: enthusiastic"
+  },
+  "another_pit_a_part": "Pit-a-part",
+  "@another_pit_a_part": {
+    "description": "Secondary emotion: 'pit-a-part' (matches asset pit-a-part.png)"
+  },
+  "another_refreshed": "Refreshed",
+  "@another_refreshed": {
+    "description": "Secondary emotion: refreshed"
+  },
+  "another_depressed": "Depressed",
+  "@another_depressed": {
+    "description": "Secondary emotion: depressed"
+  },
+  "another_lonely": "Lonely",
+  "@another_lonely": {
+    "description": "Secondary emotion: lonely"
+  },
+  "another_anxious": "Anxious",
+  "@another_anxious": {
+    "description": "Secondary emotion: anxious"
+  },
+  "another_sad": "Sad",
+  "@another_sad": {
+    "description": "Secondary emotion: sad"
+  },
+  "another_angry": "Angry",
+  "@another_angry": {
+    "description": "Secondary emotion: angry"
+  },
+  "another_pressured": "Pressured",
+  "@another_pressured": {
+    "description": "Secondary emotion: pressured"
+  },
+  "another_annoyed": "Annoyed",
+  "@another_annoyed": {
+    "description": "Secondary emotion: annoyed"
+  },
+  "another_tired": "Tired",
+  "@another_tired": {
+    "description": "Secondary emotion: tired"
+  },
+  "overall_balance_title": "Overall Balance",
+  "@overall_balance_title": {
+    "description": "title"
+  },
+  "dominated_by": "Dominated by: {emotion}",
+  "@dominated_by": {
+    "description": "Label for the dominated by",
+    "placeholders": {
+      "emotion": {
+        "type": "String",
+        "example": "Happy"
+      }
+    }
+  },
+  "days_with_mood_in_month_count": "{count, plural, =0{Don't have yet} =1{1 day} other{TotalMood: {count} day with mood }}",
+  "@days_with_mood_in_month_count": {
+    "description": "Render day count with proper pluralization",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
   }
 }

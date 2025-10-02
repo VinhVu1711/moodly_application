@@ -139,7 +139,7 @@ class UserPage extends StatelessWidget {
                 context: context,
                 icon: Icons.privacy_tip_rounded,
                 title: t.setting_privacy,
-                subtitle: '—',
+                subtitle: t.setting_privacy_title,
                 onTap: () {
                   // TODO: mở trang quyền riêng tư
                 },

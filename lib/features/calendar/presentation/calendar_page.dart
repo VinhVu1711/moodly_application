@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:go_router/go_router.dart';
@@ -19,15 +20,16 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _showTodayQuoteDialog(BuildContext context) async {
     final qs = QuoteService(Supabase.instance.client);
     final cs = Theme.of(context).colorScheme;
+    // final t = AppLocalizations.of(context)!;
 
     final quote = await qs.getTodayQuote(lang: 'vi');
 
     await showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         backgroundColor: cs.surfaceContainerHigh,
         title: Text(
-          'Inspiration for today',
+          ctx.l10n.quote_label,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -40,7 +42,7 @@ class _CalendarPageState extends State<CalendarPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(context.l10n.close_button_title),
           ),
         ],
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -311,7 +313,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
     final selected = await showDialog<Emotion5?>(
       context: context,
-      builder: (_) {
+      builder: (ctx) {
         Emotion5? temp = cal.filterEmotion;
         return AlertDialog(
           backgroundColor: cs.surfaceContainerHigh,
@@ -319,7 +321,7 @@ class _CalendarPageState extends State<CalendarPage> {
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
-            'Lọc theo cảm xúc',
+            ctx.l10n.sort_by_emotion_title,
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -399,11 +401,11 @@ class _CalendarPageState extends State<CalendarPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel_button_title),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, temp),
-              child: const Text('Apply'),
+              child: Text(context.l10n.apply_button_title),
             ),
           ],
         );
@@ -557,7 +559,7 @@ class _MonthYearDialogState extends State<_MonthYearDialog> {
                 const Spacer(),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text(context.l10n.cancel_button_title),
                 ),
               ],
             ),

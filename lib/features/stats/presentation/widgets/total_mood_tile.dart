@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
 import 'package:provider/provider.dart';
 
 import '../../vm/stats_vm.dart';
@@ -15,7 +16,7 @@ class TotalMoodTile extends StatelessWidget {
           children: [
             const Icon(Icons.summarize),
             const SizedBox(width: 12),
-            Text('TotalMood: $total ngày có mood'),
+            Text(context.l10n.days_with_mood_in_month_count(total)),
           ],
         );
       },

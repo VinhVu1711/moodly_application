@@ -62,8 +62,7 @@ import 'app_localizations_vi.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -71,8 +70,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -84,19 +82,30 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('vi'),
+    Locale('vi')
   ];
+
+  /// If just modify the content -> hot restart, If add key or placeholder -> flutter gen-l10n or stop the app and flutter run. DO NOT MODIFY THE GENERATED FILE
+  ///
+  /// In en, this message translates to:
+  /// **''**
+  String get rule_in_arb;
+
+  /// User Page Section
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user_page_section;
 
   /// Header title on user page
   ///
@@ -158,11 +167,23 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get setting_notifications;
 
+  /// The subtitle of notification
+  ///
+  /// In en, this message translates to:
+  /// **'Your notification settings'**
+  String get setting_notifications_subtitle;
+
   /// Setting item: privacy and security
   ///
   /// In en, this message translates to:
   /// **'Privacy & security'**
   String get setting_privacy;
+
+  /// The subtitle of privacy and security
+  ///
+  /// In en, this message translates to:
+  /// **'Protect your account'**
+  String get setting_privacy_title;
 
   /// Title of the about section
   ///
@@ -217,10 +238,303 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign out'**
   String get btn_ok;
+
+  /// Label of calendar section
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get home_page_section;
+
+  /// Label of sort
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by main emotion'**
+  String get sort_by_emotion_title;
+
+  /// Label of button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel_button_title;
+
+  /// Label
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply_button_title;
+
+  /// Label
+  ///
+  /// In en, this message translates to:
+  /// **'Quote of today'**
+  String get quote_label;
+
+  /// Label of button
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close_button_title;
+
+  /// Label of stat section
+  ///
+  /// In en, this message translates to:
+  /// **'Stat'**
+  String get stat_page_section;
+
+  /// Month title
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month_title;
+
+  /// Year title
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get year_title;
+
+  /// Dont have data title
+  ///
+  /// In en, this message translates to:
+  /// **'Uh...Sorry don\'t have data in this range'**
+  String get dont_have_data_title;
+
+  /// Render streak length in days with proper pluralization
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 days} =1{1 day} other{{count} days}}'**
+  String streak_days(int count);
+
+  /// Title
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a year'**
+  String get pick_year_title;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Mood Flow'**
+  String get mood_flow_title;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Your emotional journey this year'**
+  String get mood_flow_year_title;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Your emotional journey this month'**
+  String get mood_flow_month_title;
+
+  /// Render month count with proper pluralization
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 months} =1{1 month} other{{count} months}}'**
+  String months_count(int count);
+
+  /// Render day count with proper pluralization
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 days} =1{1 day} other{{count} days}}'**
+  String days_count(int count);
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Emotions'**
+  String get mood_flow_emotions_title;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Mood Distribution'**
+  String get mood_distribution_title;
+
+  /// Label for the most common emotion
+  ///
+  /// In en, this message translates to:
+  /// **'Most common: {emotion}'**
+  String most_common_with(String emotion);
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Very sad'**
+  String get emotion_very_sad;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get emotion_sad;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get emotion_neutral;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Happy'**
+  String get emotion_happy;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Very happy'**
+  String get emotion_very_happy;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Stranger'**
+  String get people_stranger;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get people_family;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get people_friends;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get people_partner;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Lover'**
+  String get people_lover;
+
+  /// Secondary emotion: excited
+  ///
+  /// In en, this message translates to:
+  /// **'Excited'**
+  String get another_excited;
+
+  /// Secondary emotion: relaxed
+  ///
+  /// In en, this message translates to:
+  /// **'Relaxed'**
+  String get another_relaxed;
+
+  /// Secondary emotion: proud
+  ///
+  /// In en, this message translates to:
+  /// **'Proud'**
+  String get another_proud;
+
+  /// Secondary emotion: hopeful
+  ///
+  /// In en, this message translates to:
+  /// **'Hopeful'**
+  String get another_hopeful;
+
+  /// Secondary emotion: happy
+  ///
+  /// In en, this message translates to:
+  /// **'Happy'**
+  String get another_happy;
+
+  /// Secondary emotion: enthusiastic
+  ///
+  /// In en, this message translates to:
+  /// **'Enthusiastic'**
+  String get another_enthusiastic;
+
+  /// Secondary emotion: 'pit-a-part' (matches asset pit-a-part.png)
+  ///
+  /// In en, this message translates to:
+  /// **'Pit-a-part'**
+  String get another_pit_a_part;
+
+  /// Secondary emotion: refreshed
+  ///
+  /// In en, this message translates to:
+  /// **'Refreshed'**
+  String get another_refreshed;
+
+  /// Secondary emotion: depressed
+  ///
+  /// In en, this message translates to:
+  /// **'Depressed'**
+  String get another_depressed;
+
+  /// Secondary emotion: lonely
+  ///
+  /// In en, this message translates to:
+  /// **'Lonely'**
+  String get another_lonely;
+
+  /// Secondary emotion: anxious
+  ///
+  /// In en, this message translates to:
+  /// **'Anxious'**
+  String get another_anxious;
+
+  /// Secondary emotion: sad
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get another_sad;
+
+  /// Secondary emotion: angry
+  ///
+  /// In en, this message translates to:
+  /// **'Angry'**
+  String get another_angry;
+
+  /// Secondary emotion: pressured
+  ///
+  /// In en, this message translates to:
+  /// **'Pressured'**
+  String get another_pressured;
+
+  /// Secondary emotion: annoyed
+  ///
+  /// In en, this message translates to:
+  /// **'Annoyed'**
+  String get another_annoyed;
+
+  /// Secondary emotion: tired
+  ///
+  /// In en, this message translates to:
+  /// **'Tired'**
+  String get another_tired;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Balance'**
+  String get overall_balance_title;
+
+  /// Label for the dominated by
+  ///
+  /// In en, this message translates to:
+  /// **'Dominated by: {emotion}'**
+  String dominated_by(String emotion);
+
+  /// Render day count with proper pluralization
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Don\'t have yet} =1{1 day} other{TotalMood: {count} day with mood }}'**
+  String days_with_mood_in_month_count(int count);
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -229,26 +543,25 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'vi'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'vi'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'vi':
-      return AppLocalizationsVi();
+    case 'en': return AppLocalizationsEn();
+    case 'vi': return AppLocalizationsVi();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }
