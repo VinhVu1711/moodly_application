@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
 import 'package:provider/provider.dart';
 
 import 'package:moodlyy_application/features/auth/vm/auth_vm.dart';
@@ -7,6 +8,8 @@ import 'package:moodlyy_application/l10n/app_localizations.dart';
 
 // Locale Provider
 import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
+// NEW: Theme Provider
+import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -112,15 +115,14 @@ class UserPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // Theme (chưa triển khai đổi theme bằng Provider – để sau)
+              // Theme
               _buildSettingCard(
                 context: context,
                 icon: Icons.brightness_6_rounded,
                 title: t.setting_theme,
-                subtitle: t.setting_theme_system,
-                onTap: () {
-                  // TODO: sẽ mở bottom sheet chọn Light/Dark/System bằng ThemeVM
-                },
+                // NEW: hiển thị theo ThemeVM
+                subtitle: context.watch<ThemeVM>().displayName(context),
+                onTap: () => _showThemeSheet(context), // NEW
               ),
               const SizedBox(height: 12),
 
@@ -276,14 +278,6 @@ class UserPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ListTile(
-            //   leading: const Icon(Icons.settings_suggest_rounded),
-            //   title: const Text('System'),
-            //   onTap: () {
-            //     context.read<LocaleVM>().setLocale(null);
-            //     Navigator.pop(context);
-            //   },
-            // ),
             ListTile(
               leading: const Icon(Icons.flag),
               title: Text(t.setting_language_vi),
@@ -297,6 +291,56 @@ class UserPage extends StatelessWidget {
               title: Text(t.setting_language_en),
               onTap: () {
                 context.read<LocaleVM>().setLocale(const Locale('en'));
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // NEW: Bottom sheet chọn theme
+  Future<void> _showThemeSheet(BuildContext context) async {
+    final themeVM = context.read<ThemeVM>();
+
+    await showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.settings_suggest_rounded),
+              title: Text(ctx.l10n.setting_theme_system),
+              onTap: () {
+                themeVM.setMode(ThemeMode.system);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.light_mode_rounded),
+              title: Text(
+                ctx.l10n.setting_theme_light,
+              ),
+              onTap: () {
+                themeVM.setMode(ThemeMode.light);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.dark_mode_rounded),
+              title: Text(
+                // Nếu bạn đã có key i18n, thay thế bằng t.setting_theme_dark
+                ctx.l10n.setting_theme_dark,
+              ),
+              onTap: () {
+                themeVM.setMode(ThemeMode.dark);
                 Navigator.pop(context);
               },
             ),

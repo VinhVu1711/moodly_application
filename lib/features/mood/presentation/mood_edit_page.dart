@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
+import 'package:moodlyy_application/features/mood/presentation/mood_l10n.dart';
 import 'package:provider/provider.dart';
 import '../../mood/domain/mood.dart';
 import '../../mood/vm/mood_vm.dart';
@@ -166,10 +168,10 @@ class _MoodEditPageState extends State<MoodEditPage> {
           d.year == _day.year &&
           cal.isSelectableDay(d),
     );
-
+    if (!mounted) return;
     if (picked != null) {
       // ✅ kiểm tra lại sau khi chọn (phòng trường hợp predicate thay đổi)
-      final err = cal.canReactOn(picked);
+      final err = cal.canReactOn(picked, context);
       if (err != null) {
         _showFutureNotAllowed(err);
         return;
@@ -187,21 +189,21 @@ class _MoodEditPageState extends State<MoodEditPage> {
 
     final ok = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         backgroundColor: cs.surfaceContainerHigh,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete this mood?'),
-        content: const Text(
-          'This will remove your mood (emotion, other emotions, people, and note) for this day.',
+        title: Text(ctx.l10n.delete_title),
+        content: Text(
+          ctx.l10n.delete_content,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(ctx.l10n.cancel_button_title),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(ctx.l10n.delete_button_title),
           ),
         ],
       ),
@@ -271,7 +273,10 @@ class _MoodEditPageState extends State<MoodEditPage> {
                 ? null
                 : () async {
                     // ✅ vẫn kiểm tra lần cuối trước khi lưu
-                    final err = context.read<CalendarVM>().canReactOn(_day);
+                    final err = context.read<CalendarVM>().canReactOn(
+                      _day,
+                      context,
+                    );
                     if (err != null) {
                       _showFutureNotAllowed(err);
                       return;
@@ -295,7 +300,9 @@ class _MoodEditPageState extends State<MoodEditPage> {
                       ).showSnackBar(SnackBar(content: Text(res)));
                     }
                   },
-            child: Text(vm.isBusy ? 'Saving...' : 'Done'),
+            child: Text(
+              vm.isBusy ? context.l10n.saving_status : context.l10n.done_status,
+            ),
           ),
         ),
       ),
@@ -309,7 +316,7 @@ class _MoodEditPageState extends State<MoodEditPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'How was your day?',
+                  context.l10n.how_was_your_day,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -331,7 +338,7 @@ class _MoodEditPageState extends State<MoodEditPage> {
           ),
           const SizedBox(height: 16),
           _ExpansionSection(
-            title: 'Emotions',
+            title: context.l10n.emotions_title,
             initiallyExpanded: _openEmotions,
             onExpansionChanged: (v) => setState(() => _openEmotions = v),
             child: Padding(
@@ -342,14 +349,17 @@ class _MoodEditPageState extends State<MoodEditPage> {
                 onToggle: (a) => setState(() {
                   _subs.contains(a) ? _subs.remove(a) : _subs.add(a);
                 }),
-                labelOf: (a) => a.label,
+                labelOf: (a) => a.l10n(context),
                 assetOf: (a) => a.assetPath,
               ),
             ),
           ),
           const SizedBox(height: 16),
           _ExpansionSection(
-            title: 'People',
+            // ✅ sửa: tiêu đề People đúng thay vì bị "Emotions"
+            title: context
+                .l10n
+                .people_title, // nếu bạn có key i18n, đổi thành: context.l10n.people_title
             initiallyExpanded: _openPeople,
             onExpansionChanged: (v) => setState(() => _openPeople = v),
             child: Padding(
@@ -360,7 +370,7 @@ class _MoodEditPageState extends State<MoodEditPage> {
                 onToggle: (p) => setState(() {
                   _people.contains(p) ? _people.remove(p) : _people.add(p);
                 }),
-                labelOf: (p) => p.label,
+                labelOf: (p) => p.l10n(context),
                 assetOf: (p) => p.assetPath,
               ),
             ),
@@ -372,9 +382,9 @@ class _MoodEditPageState extends State<MoodEditPage> {
               controller: _noteCtrl,
               minLines: 3,
               maxLines: 6,
-              decoration: const InputDecoration(
-                labelText: 'Add a note (optional)',
-                border: OutlineInputBorder(borderSide: BorderSide.none),
+              decoration: InputDecoration(
+                labelText: context.l10n.add_a_note_title,
+                border: const OutlineInputBorder(borderSide: BorderSide.none),
               ),
             ),
           ),
@@ -433,7 +443,8 @@ class _MainEmotionIcon extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            emotion.label,
+            // ✅ dùng i18n thay vì label cứng
+            emotion.l10n(context),
             style: TextStyle(
               fontSize: 12,
               color: selected
@@ -472,9 +483,10 @@ class _ExpansionSection extends StatelessWidget {
         ),
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
-          title: const Text(
-            'Emotions',
-            style: TextStyle(fontWeight: FontWeight.w700),
+          // ✅ dùng title truyền vào, không hardcode
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
           children: [child],
         ),

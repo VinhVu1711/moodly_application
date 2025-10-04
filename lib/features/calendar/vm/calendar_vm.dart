@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
 import '../../auth/data/auth_service.dart';
 import '../data/calendar_service.dart';
 import '../../mood/domain/mood.dart'; // ⬅️ để dùng Emotion5
@@ -95,9 +96,9 @@ class CalendarVM extends ChangeNotifier {
   /// Kiểm tra trước khi mở màn hình react.
   /// - null  → hợp lệ (được phép react)
   /// - String → message lỗi để hiển thị (không cho react)
-  String? canReactOn(DateTime day) {
+  String? canReactOn(DateTime day, BuildContext context) {
     if (isFutureDay(day)) {
-      return 'Bạn không thể ghi mood cho ngày ở tương lai.';
+      return context.l10n.warning_content;
     }
     return null;
   }

@@ -40,7 +40,7 @@
   "@setting_theme": {
     "description": "Setting item: theme/appearance"
   },
-  "setting_theme_system": "Follow system",
+  "setting_theme_system": "System",
   "@setting_theme_system": {
     "description": "Theme option: follow system"
   },
@@ -125,6 +125,14 @@
   "close_button_title": "Close",
   "@close_button_title": {
     "description": "Label of button"
+  },
+  "warning_title": "Warning",
+  "@warning_title": {
+    "description": "Label "
+  },
+  "warning_content": "You can not write mood in the future",
+  "@warning_content": {
+    "description": "content "
   },
   "stat_page_section": "Stat",
   "@stat_page_section": {
@@ -333,5 +341,53 @@
         "example": "7"
       }
     }
+  },
+  "mood_edit_page_section": "Mood",
+  "@mood_edit_page_section": {
+    "description": "label"
+  },
+  "delete_title": "Delete this mood?",
+  "@delete_title": {
+    "description": "label"
+  },
+  "delete_content": "This will remove your mood(everything) for this day",
+  "@delete_content": {
+    "description": "label"
+  },
+  "delete_button_title": "Delete",
+  "@delete_button_title": {
+    "description": "Button label"
+  },
+  "saving_status": "Saving...",
+  "@saving_status": {
+    "description": "label"
+  },
+  "done_status": "Done",
+  "@done_status": {
+    "description": "label"
+  },
+  "how_was_your_day": "How was your day?",
+  "@how_was_your_day": {
+    "description": "label"
+  },
+  "emotions_title": "Emotions",
+  "@emotions_title": {
+    "description": "title"
+  },
+  "people_title": "Peoples",
+  "@people_title": {
+    "description": "title"
+  },
+  "add_a_note_title": "Add a note(optional)",
+  "@add_a_note_title": {
+    "description": "title"
+  },
+  "setting_theme_light": "Light",
+  "@setting_theme_light": {
+    "description": "Label"
+  },
+  "setting_theme_dark": "Dark",
+  "@setting_theme_dark": {
+    "description": "Label"
   }
 }

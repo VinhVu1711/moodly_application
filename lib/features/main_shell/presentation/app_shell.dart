@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
 
 import 'package:moodlyy_application/features/calendar/presentation/calendar_page.dart';
 import 'package:moodlyy_application/features/stats/presentation/stats_page.dart';
@@ -53,24 +54,24 @@ class _AppShellState extends State<AppShell> {
         selectedIndex: _index,
         onDestinationSelected: _onNavTap,
         indicatorColor: mint.withOpacity(0.2),
-        destinations: const [
+        destinations: [
           NavigationDestination(
             icon: Icon(Icons.calendar_month_outlined),
             selectedIcon: Icon(Icons.calendar_month),
-            label: 'Lịch',
+            label: context.l10n.home_page_section,
           ),
           NavigationDestination(
             icon: Icon(Icons.stacked_line_chart_outlined),
             selectedIcon: Icon(Icons.stacked_line_chart),
-            label: 'Biểu đồ',
+            label: context.l10n.stat_page_section,
           ),
           NavigationDestination(
             icon: Icon(Icons.sentiment_satisfied_outlined),
             selectedIcon: Icon(Icons.sentiment_satisfied),
-            label: 'Mood',
+            label: context.l10n.mood_edit_page_section,
           ),
           // ĐỔI: tab AI
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.auto_awesome_outlined), // gợi ý icon AI
             selectedIcon: Icon(Icons.auto_awesome),
             label: 'AI',
@@ -78,7 +79,7 @@ class _AppShellState extends State<AppShell> {
           NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
-            label: 'Cá nhân',
+            label: context.l10n.user_page_section,
           ),
         ],
       ),

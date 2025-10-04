@@ -257,7 +257,10 @@ class _CalendarPageState extends State<CalendarPage> {
 
                 onDaySelected: (selected, _) async {
                   // ⬅️ Chỉ chặn bằng dialog, không ẩn UI
-                  final err = context.read<CalendarVM>().canReactOn(selected);
+                  final err = context.read<CalendarVM>().canReactOn(
+                    selected,
+                    context,
+                  );
                   if (err != null) {
                     _showFutureNotAllowed(context, err);
                     return;
@@ -267,6 +270,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     '/mood/new',
                     extra: selected,
                   );
+
                   if (changed == true) {
                     await context.read<MoodVM>().fetchMonth(
                       cal.focusedMonth.year,
@@ -420,10 +424,10 @@ class _CalendarPageState extends State<CalendarPage> {
     final cs = Theme.of(context).colorScheme;
     showDialog<void>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         backgroundColor: cs.surfaceContainerHigh,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Không thể thực hiện'),
+        title: Text(ctx.l10n.warning_title),
         content: Text(message),
         actions: [
           TextButton(

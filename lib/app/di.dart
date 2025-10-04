@@ -7,11 +7,17 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// NEW: import StatsVM
+// NEW: StatsVM
 import 'package:moodlyy_application/features/stats/vm/stats_vm.dart';
 
-// NEW: import LocaleVM (Provider quản lý ngôn ngữ)
+// NEW: LocaleVM (i18n)
 import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
+
+// NEW: ThemeVM (giao diện)
+import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
+
+// NEW: UserSettingsService (persist settings theo user)
+import 'package:moodlyy_application/features/settings/data/user_settings_services.dart';
 
 List<SingleChildWidget> buildProviders() => [
   // 1) Supabase client
@@ -20,6 +26,10 @@ List<SingleChildWidget> buildProviders() => [
   // 2) Services
   ProxyProvider<SupabaseClient, AuthService>(
     update: (_, sp, __) => AuthService(sp),
+  ),
+  // NEW: UserSettingsService
+  ProxyProvider<SupabaseClient, UserSettingsService>(
+    update: (_, sp, __) => UserSettingsService(sp),
   ),
 
   // 3) Stream session (dùng CHUNG auth.session$)
@@ -33,9 +43,14 @@ List<SingleChildWidget> buildProviders() => [
     create: (ctx) => AuthVM(ctx.read<AuthService>()),
   ),
 
-  // NEW: LocaleVM dùng cho i18n (load ngôn ngữ đã lưu)
+  // NEW: LocaleVM dùng cho i18n (load ngôn ngữ đã lưu trong SP lúc khởi động)
   ChangeNotifierProvider<LocaleVM>(
-    create: (_) => LocaleVM()..load(),
+    create: (ctx) => LocaleVM(ctx.read<UserSettingsService>())..load(),
+  ),
+
+  // NEW: ThemeVM dùng cho giao diện (load theme đã lưu trong SP lúc khởi động)
+  ChangeNotifierProvider<ThemeVM>(
+    create: (ctx) => ThemeVM(ctx.read<UserSettingsService>())..load(),
   ),
 
   ProxyProvider<SupabaseClient, CalendarService>(

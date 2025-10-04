@@ -39,7 +39,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get setting_theme => 'Giao diện';
 
   @override
-  String get setting_theme_system => 'Theo hệ thống';
+  String get setting_theme_system => 'Hệ thống';
 
   @override
   String get setting_notifications => 'Thông báo';
@@ -99,6 +99,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get close_button_title => 'Đóng';
+
+  @override
+  String get warning_title => 'Cảnh báo';
+
+  @override
+  String get warning_content => 'Bạn không thể ghi cảm xúc trong tương lai';
 
   @override
   String get stat_page_section => 'Thống kê';
@@ -267,4 +273,40 @@ class AppLocalizationsVi extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get mood_edit_page_section => 'Cảm xúc';
+
+  @override
+  String get delete_title => 'Xóa dữ liệu cảm xúc?';
+
+  @override
+  String get delete_content => 'Hành động này sẽ xóa toàn bộ dữ liệu ngày hôm nay';
+
+  @override
+  String get delete_button_title => 'Xóa';
+
+  @override
+  String get saving_status => 'Đang lưu';
+
+  @override
+  String get done_status => 'Hoàn thành';
+
+  @override
+  String get how_was_your_day => 'Ngày hôm nay của bạn thế nào?';
+
+  @override
+  String get emotions_title => 'Các cảm xúc';
+
+  @override
+  String get people_title => 'Con người';
+
+  @override
+  String get add_a_note_title => 'Thêm ghi chú(tùy chọn)';
+
+  @override
+  String get setting_theme_light => 'Sáng';
+
+  @override
+  String get setting_theme_dark => 'Tối';
 }

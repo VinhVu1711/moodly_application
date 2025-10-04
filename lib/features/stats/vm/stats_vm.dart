@@ -209,7 +209,10 @@ class StatsVM extends ChangeNotifier {
 
   // -------------------- NEW: Streak dựa trên created_at --------------------
 
-  DateTime _normalize(DateTime d) => DateTime(d.year, d.month, d.day);
+  DateTime _normalize(DateTime d) {
+    final local = d.toLocal();
+    return DateTime(local.year, local.month, local.day);
+  }
 
   /// Tập các NGÀY (00:00 local) mà người dùng đã **thực sự log** (dựa trên created_at).
   Set<DateTime> get _createdDays {
@@ -218,7 +221,7 @@ class StatsVM extends ChangeNotifier {
     final set = <DateTime>{};
     for (final m in vm.items) {
       // giả định model Mood có m.createdAt; nếu null thì fallback m.day
-      final ca = (m.createdAt ?? m.day).toLocal();
+      final ca = m.createdAt ?? m.day;
       set.add(_normalize(ca));
     }
     return set;
@@ -229,18 +232,26 @@ class StatsVM extends ChangeNotifier {
   /// - Nếu hôm nay chưa log nhưng hôm qua có: đếm liên tiếp từ hôm qua lùi về.
   /// - Log quá khứ hôm nay tạo (backfill) sẽ KHÔNG kéo dài chuỗi cũ, vì created_at là hôm nay.
   int get currentStreak {
-    // days: tập hợp các ngày (đã normalize) mà user có log (từ created_at)
     final days = _createdDays;
     if (days.isEmpty) return 0;
 
     final today = _normalize(DateTime.now());
+    DateTime? start;
 
-    // ✅ Chỉ tính streak nếu HÔM NAY có log. Nếu không, reset = 0
-    if (!days.contains(today)) return 0;
+    if (days.contains(today)) {
+      start = today; // hôm nay có log → đếm từ hôm nay
+    } else {
+      final yesterday = today.subtract(const Duration(days: 1));
+      if (days.contains(yesterday)) {
+        start =
+            yesterday; // hôm nay chưa log, nhưng hôm qua có → đếm từ hôm qua
+      }
+    }
 
-    // ✅ Lùi dần từng ngày cho đến khi gặp ngày không có log
-    int streak = 0;
-    var d = today;
+    if (start == null) return 0;
+
+    var d = start;
+    var streak = 0;
     while (days.contains(d)) {
       streak++;
       d = d.subtract(const Duration(days: 1));

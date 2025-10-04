@@ -158,7 +158,7 @@ abstract class AppLocalizations {
   /// Theme option: follow system
   ///
   /// In en, this message translates to:
-  /// **'Follow system'**
+  /// **'System'**
   String get setting_theme_system;
 
   /// Setting item: notifications
@@ -274,6 +274,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get close_button_title;
+
+  /// Label
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warning_title;
+
+  /// content
+  ///
+  /// In en, this message translates to:
+  /// **'You can not write mood in the future'**
+  String get warning_content;
 
   /// Label of stat section
   ///
@@ -532,6 +544,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =0{Don\'t have yet} =1{1 day} other{TotalMood: {count} day with mood }}'**
   String days_with_mood_in_month_count(int count);
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get mood_edit_page_section;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this mood?'**
+  String get delete_title;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove your mood(everything) for this day'**
+  String get delete_content;
+
+  /// Button label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete_button_title;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving_status;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done_status;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'How was your day?'**
+  String get how_was_your_day;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Emotions'**
+  String get emotions_title;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Peoples'**
+  String get people_title;
+
+  /// title
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note(optional)'**
+  String get add_a_note_title;
+
+  /// Label
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get setting_theme_light;
+
+  /// Label
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get setting_theme_dark;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

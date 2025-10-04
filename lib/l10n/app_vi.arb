@@ -40,7 +40,7 @@
   "@setting_theme": {
     "description": "Mục cài đặt: giao diện"
   },
-  "setting_theme_system": "Theo hệ thống",
+  "setting_theme_system": "Hệ thống",
   "@setting_theme_system": {
     "description": "Tùy chọn giao diện: theo hệ thống"
   },
@@ -125,6 +125,14 @@
   "close_button_title": "Đóng",
   "@close_button_title": {
     "description": "Nhãn dán của nút đóng"
+  },
+  "warning_title": "Cảnh báo",
+  "@warning_title": {
+    "description": "Label "
+  },
+  "warning_content": "Bạn không thể ghi cảm xúc trong tương lai",
+  "@warning_content": {
+    "description": "content "
   },
   "stat_page_section": "Thống kê",
   "@stat_page_section": {
@@ -333,5 +341,53 @@
         "example": "7"
       }
     }
+  },
+  "mood_edit_page_section": "Cảm xúc",
+  "@mood_edit_page_section": {
+    "description": "label"
+  },
+  "delete_title": "Xóa dữ liệu cảm xúc?",
+  "@delete_title": {
+    "description": "label"
+  },
+  "delete_content": "Hành động này sẽ xóa toàn bộ dữ liệu ngày hôm nay",
+  "@delete_content": {
+    "description": "label"
+  },
+  "delete_button_title": "Xóa",
+  "@delete_button_title": {
+    "description": "Button label"
+  },
+  "saving_status": "Đang lưu",
+  "@saving_status": {
+    "description": "label"
+  },
+  "done_status": "Hoàn thành",
+  "@done_status": {
+    "description": "label"
+  },
+  "how_was_your_day": "Ngày hôm nay của bạn thế nào?",
+  "@how_was_your_day": {
+    "description": "label"
+  },
+  "emotions_title": "Các cảm xúc",
+  "@emotions_title": {
+    "description": "title"
+  },
+  "people_title": "Con người",
+  "@people_title": {
+    "description": "title"
+  },
+  "add_a_note_title": "Thêm ghi chú(tùy chọn)",
+  "@add_a_note_title": {
+    "description": "title"
+  },
+  "setting_theme_light": "Sáng",
+  "@setting_theme_light": {
+    "description": "Label"
+  },
+  "setting_theme_dark": "Tối",
+  "@setting_theme_dark": {
+    "description": "Label"
   }
 }

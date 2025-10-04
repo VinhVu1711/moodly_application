@@ -39,7 +39,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setting_theme => 'Appearance';
 
   @override
-  String get setting_theme_system => 'Follow system';
+  String get setting_theme_system => 'System';
 
   @override
   String get setting_notifications => 'Notifications';
@@ -99,6 +99,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close_button_title => 'Close';
+
+  @override
+  String get warning_title => 'Warning';
+
+  @override
+  String get warning_content => 'You can not write mood in the future';
 
   @override
   String get stat_page_section => 'Stat';
@@ -268,4 +274,40 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get mood_edit_page_section => 'Mood';
+
+  @override
+  String get delete_title => 'Delete this mood?';
+
+  @override
+  String get delete_content => 'This will remove your mood(everything) for this day';
+
+  @override
+  String get delete_button_title => 'Delete';
+
+  @override
+  String get saving_status => 'Saving...';
+
+  @override
+  String get done_status => 'Done';
+
+  @override
+  String get how_was_your_day => 'How was your day?';
+
+  @override
+  String get emotions_title => 'Emotions';
+
+  @override
+  String get people_title => 'Peoples';
+
+  @override
+  String get add_a_note_title => 'Add a note(optional)';
+
+  @override
+  String get setting_theme_light => 'Light';
+
+  @override
+  String get setting_theme_dark => 'Dark';
 }

@@ -14,10 +14,12 @@ import 'package:moodlyy_application/features/main_shell/presentation/app_shell.d
 import 'package:moodlyy_application/features/auth/data/auth_service.dart';
 import 'package:moodlyy_application/features/onboarding/presentation/intro_splash_page.dart';
 
-// NEW: import i18n + LocaleVM
+// NEW: i18n + LocaleVM
 import 'package:moodlyy_application/l10n/app_localizations.dart';
-
 import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
+
+// NEW: ThemeVM
+import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
 
 /// ✅ Helper: Stream -> Listenable để dùng cho refreshListenable
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -32,7 +34,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
   }
 }
 
-/// ⬇️ Listener dọn cache khi session đổi
+/// ⬇️ Listener dọn cache khi session đổi + đồng bộ locale/theme theo user
 class AuthSessionListener extends StatefulWidget {
   final Widget child;
   const AuthSessionListener({super.key, required this.child});
@@ -51,10 +53,16 @@ class _AuthSessionListenerState extends State<AuthSessionListener> {
 
     if (!identical(current, _last)) {
       // 🔧 Dời việc notifyListeners() sang frame kế tiếp để tránh lỗi
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) return;
+        // clear caches data theo account
         context.read<MoodVM>().clearAll();
         context.read<CalendarVM>().clearAll();
+
+        // ⬇️ NEW: sync settings theo user hiện tại
+        final uid = current?.user.id;
+        await context.read<LocaleVM>().onUserChanged(uid);
+        await context.read<ThemeVM>().onUserChanged(uid);
       });
       _last = current;
     }
@@ -84,14 +92,13 @@ class _RootRouterState extends State<RootRouter> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = context
-        .watch<LocaleVM>()
-        .locale; // đổi ngôn ngữ → rebuild MaterialApp, KHÔNG tạo router mới
+    final locale = context.watch<LocaleVM>().locale;
+    final themeMode = context.watch<ThemeVM>().mode; // NEW
 
     return AuthSessionListener(
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        routerConfig: _router!, // <-- giữ nguyên instance
+        routerConfig: _router!, // giữ nguyên instance
         // i18n
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -115,7 +122,7 @@ class _RootRouterState extends State<RootRouter> {
           ),
           useMaterial3: true,
         ),
-        themeMode: ThemeMode.system,
+        themeMode: themeMode, // NEW: lấy theo ThemeVM (theo user)
       ),
     );
   }
