@@ -75,7 +75,9 @@ class _StatsBodyState extends State<_StatsBody> {
       if (scope == StatsScope.month) {
         mood.ensureMonthLoaded(month.year, month.month);
       } else {
-        mood.ensureMonthLoaded(year, DateTime.now().month);
+        for (int m = 1; m <= 12; m++) {
+          mood.ensureMonthLoaded(year, m);
+        }
       }
     });
 

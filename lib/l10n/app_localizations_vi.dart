@@ -309,4 +309,36 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get setting_theme_dark => 'Tối';
+
+  @override
+  String get setting_change_password => 'Đổi mật khẩu';
+
+  @override
+  String get setting_delete_data => 'Xóa dữ liệu của tôi';
+
+  @override
+  String get setting_delete_account => 'Xóa tài khoản';
+
+  @override
+  String get hint_new_password => 'Nhập mật khẩu mới';
+
+  @override
+  String hint_confirm_password(String email) {
+    return 'Xác nhận mật khẩu cho $email';
+  }
+
+  @override
+  String get msg_password_changed => 'Cập nhật mật khẩu thành công';
+
+  @override
+  String get msg_data_deleted => 'Dữ liệu cá nhân đã được xóa';
+
+  @override
+  String get msg_account_deleted => 'Xóa tài khoản thành công';
+
+  @override
+  String get confirm_delete_title => 'Xác nhận xóa';
+
+  @override
+  String get confirm_delete_msg => 'Thao tác này không thể thực hiện lại';
 }

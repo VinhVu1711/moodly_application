@@ -43,6 +43,9 @@ class UserSettings {
     notifQuote: notifQuote ?? this.notifQuote,
     notifStreak: notifStreak ?? this.notifStreak,
   );
+  bool get hasAnyNotificationEnabled => notifQuote || notifStreak;
+
+  bool get isNotificationDisabled => !hasAnyNotificationEnabled;
 
   // --- Helpers (optional) ---
   static String themeModeToString(ThemeMode? m) {

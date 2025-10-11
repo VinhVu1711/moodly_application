@@ -25,7 +25,7 @@ class UserSettingsService {
     ).select();
   }
 
-  /// NEW: Upsert theme_mode: 'system' | 'light' | 'dark'
+  /// Upsert theme_mode: 'system' | 'light' | 'dark'
   Future<void> upsertThemeMode(String userId, String themeMode) async {
     await _sp.from('user_settings').upsert(
       {'user_id': userId, 'theme_mode': themeMode},
@@ -33,7 +33,7 @@ class UserSettingsService {
     ).select();
   }
 
-  /// (Optional) Upsert notifications flags
+  /// Upsert notifications flags
   Future<void> upsertNotifications({
     required String userId,
     bool? notifQuote,
@@ -47,5 +47,21 @@ class UserSettingsService {
         .from('user_settings')
         .upsert(payload, onConflict: 'user_id')
         .select();
+  }
+
+  /// Lấy riêng trạng thái notification (quote / streak)
+  Future<Map<String, bool>> fetchNotificationFlags(String userId) async {
+    final j = await _sp
+        .from('user_settings')
+        .select('notif_quote, notif_streak')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+    if (j == null) return {'notif_quote': false, 'notif_streak': false};
+
+    return {
+      'notif_quote': (j['notif_quote'] as bool?) ?? false,
+      'notif_streak': (j['notif_streak'] as bool?) ?? false,
+    };
   }
 }

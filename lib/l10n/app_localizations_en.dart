@@ -310,4 +310,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setting_theme_dark => 'Dark';
+
+  @override
+  String get setting_change_password => 'Change Password';
+
+  @override
+  String get setting_delete_data => 'Delete My Data';
+
+  @override
+  String get setting_delete_account => 'Delete Account';
+
+  @override
+  String get hint_new_password => 'Enter new password';
+
+  @override
+  String hint_confirm_password(String email) {
+    return 'Confirm your password for $email';
+  }
+
+  @override
+  String get msg_password_changed => 'Password updated successfully!';
+
+  @override
+  String get msg_data_deleted => 'All personal data deleted.';
+
+  @override
+  String get msg_account_deleted => 'Account deleted successfully.';
+
+  @override
+  String get confirm_delete_title => 'Confirm deletion';
+
+  @override
+  String get confirm_delete_msg => 'This action cannot be undone.';
 }

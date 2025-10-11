@@ -236,26 +236,29 @@ class StatsVM extends ChangeNotifier {
     if (days.isEmpty) return 0;
 
     final today = _normalize(DateTime.now());
-    DateTime? start;
+    final yesterday = today.subtract(const Duration(days: 1));
 
     if (days.contains(today)) {
-      start = today; // hôm nay có log → đếm từ hôm nay
-    } else {
-      final yesterday = today.subtract(const Duration(days: 1));
-      if (days.contains(yesterday)) {
-        start =
-            yesterday; // hôm nay chưa log, nhưng hôm qua có → đếm từ hôm qua
+      // Đếm streak đến hôm nay
+      int streak = 0;
+      DateTime cursor = today;
+      while (days.contains(cursor)) {
+        streak++;
+        cursor = cursor.subtract(const Duration(days: 1));
       }
+      return streak;
+    } else if (days.contains(yesterday)) {
+      // Hôm nay chưa log, nhưng hôm qua có → giữ nguyên chuỗi cũ
+      int streak = 0;
+      DateTime cursor = yesterday;
+      while (days.contains(cursor)) {
+        streak++;
+        cursor = cursor.subtract(const Duration(days: 1));
+      }
+      return streak;
+    } else {
+      // Không có chuỗi gần đây
+      return 0;
     }
-
-    if (start == null) return 0;
-
-    var d = start;
-    var streak = 0;
-    while (days.contains(d)) {
-      streak++;
-      d = d.subtract(const Duration(days: 1));
-    }
-    return streak;
   }
 }

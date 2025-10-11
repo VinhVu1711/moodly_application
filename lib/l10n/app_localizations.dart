@@ -616,6 +616,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark'**
   String get setting_theme_dark;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get setting_change_password;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete My Data'**
+  String get setting_delete_data;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get setting_delete_account;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new password'**
+  String get hint_new_password;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your password for {email}'**
+  String hint_confirm_password(String email);
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated successfully!'**
+  String get msg_password_changed;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'All personal data deleted.'**
+  String get msg_data_deleted;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted successfully.'**
+  String get msg_account_deleted;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm deletion'**
+  String get confirm_delete_title;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get confirm_delete_msg;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

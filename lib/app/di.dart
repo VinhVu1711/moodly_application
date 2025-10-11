@@ -1,8 +1,14 @@
+import 'package:moodlyy_application/features/app/notification/local_notifications_port.dart';
+import 'package:moodlyy_application/features/app/vm/notification_vm.dart';
+import 'package:moodlyy_application/features/app/vm/notification_vm.dart'
+    show NotificationsPort; // dùng interface
 import 'package:moodlyy_application/features/auth/data/auth_service.dart';
 import 'package:moodlyy_application/features/auth/vm/auth_vm.dart';
 import 'package:moodlyy_application/features/calendar/data/calendar_service.dart';
 import 'package:moodlyy_application/features/calendar/vm/calendar_vm.dart';
 import 'package:moodlyy_application/features/mood/vm/mood_vm.dart';
+import 'package:moodlyy_application/features/user/data/user_privacy_service.dart';
+import 'package:moodlyy_application/features/user/vm/user_privacy_vm.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -19,42 +25,54 @@ import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
 // NEW: UserSettingsService (persist settings theo user)
 import 'package:moodlyy_application/features/settings/data/user_settings_services.dart';
 
+// NEW: NotificationVM (state bật/tắt notification theo user)
+import 'package:moodlyy_application/features/app/vm/notification_vm.dart';
+
 List<SingleChildWidget> buildProviders() => [
-  // 1) Supabase client
+  // 1️⃣ Supabase client
   Provider<SupabaseClient>(create: (_) => Supabase.instance.client),
 
-  // 2) Services
+  // 2️⃣ Services
   ProxyProvider<SupabaseClient, AuthService>(
     update: (_, sp, __) => AuthService(sp),
   ),
-  // NEW: UserSettingsService
   ProxyProvider<SupabaseClient, UserSettingsService>(
     update: (_, sp, __) => UserSettingsService(sp),
   ),
+  ProxyProvider<SupabaseClient, CalendarService>(
+    update: (_, sp, __) => CalendarService(sp),
+  ),
+  // ✅ Thêm dòng này — thiếu trong file của em
+  ProxyProvider<SupabaseClient, UserPrivacyService>(
+    update: (_, sp, __) => UserPrivacyService(sp),
+  ),
 
-  // 3) Stream session (dùng CHUNG auth.session$)
+  // 3️⃣ NotificationsPort triển khai thật
+  Provider<NotificationsPort>(
+    create: (_) => LocalNotificationsPort()..init(),
+  ),
+
+  // 4️⃣ Streams
   StreamProvider<Session?>(
     initialData: Supabase.instance.client.auth.currentSession,
     create: (ctx) => ctx.read<AuthService>().session$,
   ),
 
-  // 4) ViewModels
+  // 5️⃣ ViewModels
   ChangeNotifierProvider<AuthVM>(
     create: (ctx) => AuthVM(ctx.read<AuthService>()),
   ),
-
-  // NEW: LocaleVM dùng cho i18n (load ngôn ngữ đã lưu trong SP lúc khởi động)
   ChangeNotifierProvider<LocaleVM>(
     create: (ctx) => LocaleVM(ctx.read<UserSettingsService>())..load(),
   ),
-
-  // NEW: ThemeVM dùng cho giao diện (load theme đã lưu trong SP lúc khởi động)
   ChangeNotifierProvider<ThemeVM>(
     create: (ctx) => ThemeVM(ctx.read<UserSettingsService>())..load(),
   ),
-
-  ProxyProvider<SupabaseClient, CalendarService>(
-    update: (_, sp, __) => CalendarService(sp),
+  ChangeNotifierProvider<NotificationVM>(
+    create: (ctx) => NotificationVM(
+      ctx.read<UserSettingsService>(),
+      ctx.read<NotificationsPort>(),
+    ),
   ),
   ChangeNotifierProvider<CalendarVM>(
     create: (ctx) => CalendarVM(
@@ -64,7 +82,6 @@ List<SingleChildWidget> buildProviders() => [
   ),
   ChangeNotifierProvider<MoodVM>(create: (_) => MoodVM()),
 
-  // NEW: StatsVM phụ thuộc MoodVM → dùng ProxyProvider để bind dữ liệu nguồn
   ChangeNotifierProxyProvider<MoodVM, StatsVM>(
     create: (_) => StatsVM(),
     update: (_, moodVM, stats) {
@@ -72,5 +89,13 @@ List<SingleChildWidget> buildProviders() => [
       stats.bindMoodVM(moodVM);
       return stats;
     },
+  ),
+
+  // ✅ PrivacyVM (đã có service)
+  ChangeNotifierProvider<UserPrivacyVM>(
+    create: (ctx) => UserPrivacyVM(
+      ctx.read<UserPrivacyService>(),
+      ctx.read<SupabaseClient>(),
+    ),
   ),
 ];

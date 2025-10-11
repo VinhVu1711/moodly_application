@@ -11,8 +11,11 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // Giữ Java 11 như hiện tại
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // BẬT desugaring cho thư viện core (bắt buộc cho flutter_local_notifications/timezone)
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -20,10 +23,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.moodlyy_application"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -32,8 +32,7 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Ký tạm bằng debug để chạy nhanh (như hiện tại)
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -41,4 +40,12 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// ✅ THÊM KHỐI NÀY
+dependencies {
+    // Cần cho core library desugaring (Java 8 APIs trên Android cũ)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    // (Không bắt buộc) Nếu muốn, có thể thêm jdk8 stdlib:
+    // implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }

@@ -11,152 +11,166 @@ class MoodBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<StatsVM, Map<Emotion5, double>>(
-      selector: (_, vm) => vm.percents,
-      builder: (_, percents, __) {
-        final order = [
-          Emotion5.veryHappy,
-          Emotion5.happy,
-          Emotion5.neutral,
-          Emotion5.sad,
-          Emotion5.verySad,
-        ];
-        final topEntry = percents.entries.reduce(
-          (a, b) => a.value >= b.value ? a : b,
-        );
+    return Consumer<StatsVM>(
+      builder: (_, vm, __) {
+        // Dùng key để ép rebuild khi scope thay đổi
+        return KeyedSubtree(
+          key: ValueKey(vm.scope),
+          child: Selector<StatsVM, Map<Emotion5, double>>(
+            selector: (_, vm) =>
+                Map.of(vm.percents), // copy để tránh caching reference
+            builder: (_, percents, __) {
+              final order = [
+                Emotion5.veryHappy,
+                Emotion5.happy,
+                Emotion5.neutral,
+                Emotion5.sad,
+                Emotion5.verySad,
+              ];
+              final topEntry = percents.entries.reduce(
+                (a, b) => a.value >= b.value ? a : b,
+              );
 
-        final totalEntries = percents.values.fold(
-          0.0,
-          (sum, percent) => sum + percent,
-        );
-        final hasData = totalEntries > 0;
+              final totalEntries = percents.values.fold(
+                0.0,
+                (sum, percent) => sum + percent,
+              );
+              final hasData = totalEntries > 0;
 
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Enhanced Header
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.secondary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
                     ),
-                    child: Icon(
-                      Icons.bar_chart_rounded,
-                      color: Theme.of(context).colorScheme.secondary,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.mood_distribution_title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        hasData
-                            ? context.l10n.most_common_with(topEntry.key.label)
-                            : 'No data available',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Enhanced mood items with animations
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  for (final e in order)
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: _EnhancedMoodPercentItem(
-                          emotion: e,
-                          percent: percents[e] ?? 0,
-                          highlighted:
-                              e == topEntry.key && (topEntry.value > 0),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Enhanced stacked bar with labels
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        context.l10n.overall_balance_title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                      if (hasData)
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: topEntry.key.color.withOpacity(0.1),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.secondary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(
-                            context.l10n.dominated_by(topEntry.key.label),
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: topEntry.key.color,
-                            ),
+                          child: Icon(
+                            Icons.bar_chart_rounded,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 20,
                           ),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  _EnhancedStackedPill(
-                    percents: {
-                      Emotion5.veryHappy: percents[Emotion5.veryHappy] ?? 0,
-                      Emotion5.happy: percents[Emotion5.happy] ?? 0,
-                      Emotion5.neutral: percents[Emotion5.neutral] ?? 0,
-                      Emotion5.sad: percents[Emotion5.sad] ?? 0,
-                      Emotion5.verySad: percents[Emotion5.verySad] ?? 0,
-                    },
-                  ),
-                ],
-              ),
-            ],
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.l10n.mood_distribution_title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              hasData
+                                  ? context.l10n.most_common_with(
+                                      topEntry.key.label,
+                                    )
+                                  : 'No data available',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Mood items
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        for (final e in order)
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 2,
+                              ),
+                              child: _EnhancedMoodPercentItem(
+                                emotion: e,
+                                percent: percents[e] ?? 0,
+                                highlighted:
+                                    e == topEntry.key && (topEntry.value > 0),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Stacked bar
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              context.l10n.overall_balance_title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            if (hasData)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: topEntry.key.color.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  context.l10n.dominated_by(topEntry.key.label),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    color: topEntry.key.color,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        _EnhancedStackedPill(
+                          percents: {
+                            Emotion5.veryHappy:
+                                percents[Emotion5.veryHappy] ?? 0,
+                            Emotion5.happy: percents[Emotion5.happy] ?? 0,
+                            Emotion5.neutral: percents[Emotion5.neutral] ?? 0,
+                            Emotion5.sad: percents[Emotion5.sad] ?? 0,
+                            Emotion5.verySad: percents[Emotion5.verySad] ?? 0,
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },

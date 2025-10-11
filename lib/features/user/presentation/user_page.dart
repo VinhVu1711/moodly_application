@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moodlyy_application/common/l10n_etx.dart';
+import 'package:moodlyy_application/features/user/vm/user_privacy_vm.dart';
 import 'package:provider/provider.dart';
 
 import 'package:moodlyy_application/features/auth/vm/auth_vm.dart';
@@ -10,6 +11,8 @@ import 'package:moodlyy_application/l10n/app_localizations.dart';
 import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
 // NEW: Theme Provider
 import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
+
+// NEW: Notification VM
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -126,25 +129,21 @@ class UserPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              _buildSettingCard(
-                context: context,
-                icon: Icons.notifications_rounded,
-                title: t.setting_notifications,
-                subtitle: t.setting_notifications,
-                onTap: () {
-                  // TODO: mở trang cài đặt thông báo
-                },
-              ),
-              const SizedBox(height: 12),
-
+              // Fix sau, khong thong bao duoc
+              // _buildSettingCard(
+              //   context: context,
+              //   icon: Icons.notifications_rounded,
+              //   title: t.setting_notifications,
+              //   subtitle: t.setting_notifications,
+              //   onTap: () => _showNotificationSheet(context),
+              // ),
+              // const SizedBox(height: 12),
               _buildSettingCard(
                 context: context,
                 icon: Icons.privacy_tip_rounded,
                 title: t.setting_privacy,
                 subtitle: t.setting_privacy_title,
-                onTap: () {
-                  // TODO: mở trang quyền riêng tư
-                },
+                onTap: () => _showPrivacySheet(context),
               ),
 
               const SizedBox(height: 24),
@@ -336,7 +335,6 @@ class UserPage extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.dark_mode_rounded),
               title: Text(
-                // Nếu bạn đã có key i18n, thay thế bằng t.setting_theme_dark
                 ctx.l10n.setting_theme_dark,
               ),
               onTap: () {
@@ -350,6 +348,74 @@ class UserPage extends StatelessWidget {
       ),
     );
   }
+
+  // NEW: Bottom sheet cài đặt Notification (Quote 08:00, Streak 20:00)
+  // Future<void> _showNotificationSheet(BuildContext context) async {
+  //   final auth = context.read<AuthVM>();
+  //   final uid = auth.user?.id;
+
+  //   if (uid == null) {
+  //     // Không thay đổi UI tổng thể: chỉ báo nhanh nếu chưa đăng nhập (edge case)
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: const Text('')),
+  //     );
+  //     return;
+  //   }
+
+  //   final notifVM = context.read<NotificationVM>();
+  //   bool quote = notifVM.notifQuote;
+  //   bool streak = notifVM.notifStreak;
+
+  //   await showModalBottomSheet(
+  //     context: context,
+  //     showDragHandle: true,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     builder: (ctx) => SafeArea(
+  //       child: StatefulBuilder(
+  //         builder: (ctx, setState) {
+  //           return Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               SwitchListTile.adaptive(
+  //                 contentPadding: const EdgeInsets.symmetric(
+  //                   horizontal: 16,
+  //                   vertical: 0,
+  //                 ),
+  //                 secondary: const Icon(Icons.format_quote_rounded),
+  //                 title: const Text('Daily quote (08:00)'),
+  //                 subtitle: const Text(
+  //                   "Don't forget to check your quote today!",
+  //                 ),
+  //                 value: quote,
+  //                 onChanged: (v) async {
+  //                   setState(() => quote = v);
+  //                   await notifVM.toggleQuote(uid, v);
+  //                 },
+  //               ),
+  //               SwitchListTile.adaptive(
+  //                 contentPadding: const EdgeInsets.symmetric(
+  //                   horizontal: 16,
+  //                   vertical: 0,
+  //                 ),
+  //                 secondary: const Icon(Icons.local_fire_department_rounded),
+  //                 title: const Text('Keep streak (20:00)'),
+  //                 subtitle: const Text("Keep your streak now! Don't lose it"),
+  //                 value: streak,
+  //                 onChanged: (v) async {
+  //                   setState(() => streak = v);
+  //                   await notifVM.toggleStreak(uid, v);
+  //                 },
+  //               ),
+  //               const SizedBox(height: 8),
+  //             ],
+  //           );
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // Non-interactive info card for displaying user information
   Widget _buildInfoCard({
@@ -417,6 +483,184 @@ class UserPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showPrivacySheet(BuildContext context) async {
+    final vm = context.read<UserPrivacyVM>();
+    final t = AppLocalizations.of(context)!;
+    final email = vm.userEmail ?? '';
+
+    await showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          // ✅ thêm dòng này
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(
+              ctx,
+            ).viewInsets.bottom, // ✅ tránh bị che bởi bàn phím
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  t.setting_privacy_title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.lock_reset_rounded),
+                  label: Text(t.setting_change_password),
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    final newPass = await _askPasswordDialog(
+                      context,
+                      title: t.setting_change_password,
+                      hint: t.hint_new_password,
+                    );
+                    if (newPass != null && newPass.isNotEmpty) {
+                      await vm.changePassword(newPass);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(t.msg_password_changed)),
+                        );
+                      }
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.cleaning_services_rounded),
+                  label: Text(t.setting_delete_data),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    final pass = await _askPasswordDialog(
+                      context,
+                      title: t.setting_delete_data,
+                      hint: t.hint_confirm_password(email),
+                    );
+                    if (pass != null && pass.isNotEmpty) {
+                      await vm.deleteUserData(pass);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(t.msg_data_deleted)),
+                        );
+                      }
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.delete_forever_rounded),
+                  label: Text(t.setting_delete_account),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    final pass = await _askPasswordDialog(
+                      context,
+                      title: t.setting_delete_account,
+                      hint: t.hint_confirm_password(email),
+                    );
+                    if (pass != null && pass.isNotEmpty) {
+                      final ok = await _confirmDialog(
+                        context,
+                        title: t.confirm_delete_title,
+                        message: t.confirm_delete_msg,
+                      );
+                      if (ok) {
+                        await vm.deleteAccount(pass);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(t.msg_account_deleted)),
+                          );
+                        }
+                      }
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Dialog nhập mật khẩu hoặc mật khẩu mới
+  Future<String?> _askPasswordDialog(
+    BuildContext context, {
+    required String title,
+    required String hint,
+  }) async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          obscureText: true,
+          decoration: InputDecoration(hintText: hint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Dialog xác nhận hành động (xóa tài khoản)
+  Future<bool> _confirmDialog(
+    BuildContext context, {
+    required String title,
+    required String message,
+  }) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   // Interactive setting card with onTap functionality

@@ -21,6 +21,9 @@ import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
 // NEW: ThemeVM
 import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
 
+// NEW: NotificationVM
+import 'package:moodlyy_application/features/app/vm/notification_vm.dart';
+
 /// ✅ Helper: Stream -> Listenable để dùng cho refreshListenable
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
@@ -34,7 +37,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
   }
 }
 
-/// ⬇️ Listener dọn cache khi session đổi + đồng bộ locale/theme theo user
+/// ⬇️ Listener dọn cache khi session đổi + đồng bộ locale/theme/notification theo user
 class AuthSessionListener extends StatefulWidget {
   final Widget child;
   const AuthSessionListener({super.key, required this.child});
@@ -55,14 +58,21 @@ class _AuthSessionListenerState extends State<AuthSessionListener> {
       // 🔧 Dời việc notifyListeners() sang frame kế tiếp để tránh lỗi
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) return;
+
         // clear caches data theo account
         context.read<MoodVM>().clearAll();
         context.read<CalendarVM>().clearAll();
 
-        // ⬇️ NEW: sync settings theo user hiện tại
+        // ⬇️ sync settings theo user hiện tại
         final uid = current?.user.id;
         await context.read<LocaleVM>().onUserChanged(uid);
         await context.read<ThemeVM>().onUserChanged(uid);
+
+        // ⬇️ sync notification theo user (toàn bộ logic nằm trong VM)
+        final notifVM = context.read<NotificationVM>();
+        if (uid != null) {
+          await notifVM.syncForUser(uid);
+        }
       });
       _last = current;
     }

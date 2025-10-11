@@ -389,5 +389,51 @@
   "setting_theme_dark": "Dark",
   "@setting_theme_dark": {
     "description": "Label"
+  },
+  "setting_change_password": "Change Password",
+  "@setting_change_password": {
+    "description": "label"
+  },
+  "setting_delete_data": "Delete My Data",
+  "@setting_delete_data": {
+    "description": "label"
+  },
+  "setting_delete_account": "Delete Account",
+  "@setting_delete_account": {
+    "description": "label"
+  },
+  "hint_new_password": "Enter new password",
+  "@hint_new_password": {
+    "description": "label"
+  },
+  "hint_confirm_password": "Confirm your password for {email}",
+  "@hint_confirm_password": {
+    "description": "label",
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "example": "label@gmail.com"
+      }
+    }
+  },
+  "msg_password_changed": "Password updated successfully!",
+  "@msg_password_changed": {
+    "description": "label"
+  },
+  "msg_data_deleted": "All personal data deleted.",
+  "@msg_data_deleted": {
+    "description": "label"
+  },
+  "msg_account_deleted": "Account deleted successfully.",
+  "@msg_account_deleted": {
+    "description": "label"
+  },
+  "confirm_delete_title": "Confirm deletion",
+  "@confirm_delete_title": {
+    "description": "label"
+  },
+  "confirm_delete_msg": "This action cannot be undone.",
+  "@confirm_delete_msg": {
+    "description": "label"
   }
 }
