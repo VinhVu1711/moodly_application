@@ -2,8 +2,8 @@ from supabase import create_client, Client
 import pandas as pd
 
 # --- Cấu hình Supabase ---
-SUPABASE_URL = "https://dznyqpjisucohdvcjxid.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6bnlxcGppc3Vjb2hkdmNqeGlkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzU2MDA5MiwiZXhwIjoyMDczMTM2MDkyfQ.ejIncZDJYN1O1xhp0hwYDAk0IbeDLw8ujKP3uBOA_bo"
+SUPABASE_URL = "a"
+SUPABASE_KEY = "b"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- Lấy dữ liệu từ bảng moods ---
