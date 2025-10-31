@@ -1,3 +1,0 @@
-- Chạy file fetch_data trước để lấy dữ liệu từ Supabase -> cập nhật file moodly_export.csv
-- Chạy file generate_period_column để gán các tuần/tháng/năm tương ứng cho dữ liệu -> cập nhật file moodly_with_period
-- Chạy file prepare train để sinh ra train_dataset.csv

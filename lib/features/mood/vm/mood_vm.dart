@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../mood/domain/mood.dart';
 import 'dart:collection'; // ADD: để trả về map chỉ-đọc
+import 'dart:async';
+import 'package:http/http.dart' as http;
 
 DateTime _normalize(DateTime d) => DateTime(d.year, d.month, d.day);
 
@@ -66,6 +70,7 @@ class MoodVM extends ChangeNotifier {
         _byDay[_normalize(m.day)] = m;
       }
       notifyListeners();
+
       return null;
     } catch (e) {
       return e.toString();
@@ -106,8 +111,25 @@ class MoodVM extends ChangeNotifier {
 
       final saved = Mood.fromJson(inserted);
       _byDay[_normalize(saved.day)] = saved;
+      // Gọi auto sync sau 20 phút
 
       notifyListeners();
+      final uri = Uri.parse("http://10.0.2.2:8000/refresh-data");
+      final body = jsonEncode({"mode": "week"});
+      Future.delayed(const Duration(seconds: 1), () async {
+        try {
+          final res = await http.post(
+            uri,
+            headers: {"Content-Type": "application/json"},
+            body: body,
+          );
+          if (kDebugMode) {
+            print("🔄 REFRESH triggered: ${res.statusCode} ${res.body}");
+          }
+        } catch (e) {
+          if (kDebugMode) print("⚠️ REFRESH error: $e");
+        }
+      });
       return null;
     } catch (e) {
       return e.toString();

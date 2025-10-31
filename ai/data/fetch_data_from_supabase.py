@@ -1,19 +1,28 @@
-from supabase import create_client, Client
+from supabase import create_client
+from dotenv import load_dotenv
 import pandas as pd
+import os
 
-# --- Cấu hình Supabase ---
-SUPABASE_URL = "a"
-SUPABASE_KEY = "b"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+dotenv_path = os.path.join(os.path.dirname(__file__), "../.env")
+load_dotenv(dotenv_path=dotenv_path)
+supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
-# --- Lấy dữ liệu từ bảng moods ---
-response = supabase.table("moods").select(
-    "user_id,emotion,another_emotions,people,note,day"
-).execute()
-data = response.data
+def fetch_all_logs():
+    """
+    Lấy toàn bộ dữ liệu bảng moods của tất cả người dùng.
+    """
+    print("📦 Fetching ALL logs from Supabase (all users)...")
 
-# --- Ghi dữ liệu ra CSV ---
-df = pd.DataFrame(data)
-df.to_csv("ai/data/moodly_export.csv", index=False, encoding="utf-8")
+    resp = (
+        supabase.table("moods")
+        .select("*")
+        .order("day", desc=False)
+        .execute()
+    )
 
-print(f"✅ Đã tải {len(df)} dòng dữ liệu mới từ Supabase (có user_id).")
+    df = pd.DataFrame(resp.data or [])
+    out_path = "ai/data/logs_raw.csv"
+    df.to_csv(out_path, index=False, encoding="utf-8-sig")
+
+    print(f"✅ Exported {len(df)} rows → {out_path}")
+    return df

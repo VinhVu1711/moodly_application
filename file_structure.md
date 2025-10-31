@@ -1,23 +1,28 @@
 # File Tree: moodlyy_application
 
-**Generated:** 10/22/2025, 7:50:15 PM
+**Generated:** 10/31/2025, 8:03:01 PM
 **Root Path:** `f:\FlutterEngineer\DoAnChuyenNganh\moodlyy_application`
 
 ```
 ├── ai
+│   ├── api
+│   │   ├── __init__.py
+│   │   └── main.py
 │   ├── data
-│   │   ├── aggerate_period_data.py
+│   │   ├── __init__.py
+│   │   ├── clean_data.py
 │   │   ├── fetch_data_from_supabase.py
-│   │   ├── generate_period_column.py
-│   │   ├── instuction.md
-│   │   ├── moodly_export.csv
-│   │   ├── moodly_with_period.csv
-│   │   ├── prepare_train_dataset.py
-│   │   ├── train_dataset.csv
-│   │   └── week_period_dataset.csv
-│   ├── logs
+│   │   ├── logs_clean.csv
+│   │   └── logs_raw.csv
 │   ├── model
-│   └── notebooks
+│   │   ├── generate_output.py
+│   │   └── prompt_template.py
+│   ├── utils
+│   │   └── date_utils.py
+│   ├── __init__.py
+│   ├── code_structure.md
+│   ├── run_all_pipeline.py
+│   └── test.py
 ├── android
 │   ├── .kotlin
 │   │   ├── errors
@@ -162,8 +167,9 @@
 │   │   └── l10n_etx.dart
 │   ├── features
 │   │   ├── ai
-│   │   │   └── presentation
-│   │   │       └── ai_page.dart
+│   │   │   ├── presentation
+│   │   │   │   └── ai_page.dart
+│   │   │   └── vm
 │   │   ├── app
 │   │   │   ├── notification
 │   │   │   │   └── local_notifications_port.dart
@@ -320,8 +326,10 @@
 ├── .gitignore
 ├── .metadata
 ├── README.md
+├── ai.md
 ├── analysis_options.yaml
 ├── devtools_options.yaml
+├── file_structure.md
 ├── pubspec.lock
 └── pubspec.yaml
 ```
