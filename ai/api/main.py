@@ -49,8 +49,7 @@ async def refresh_data(background_tasks: BackgroundTasks):
     Hệ thống sẽ đợi 20s rồi tự động fetch toàn bộ dữ liệu từ Supabase
     và clean lại logs_clean.csv cho tất cả user.
     """
-    def delayed_clean():
-        time.sleep(20)
+    def run_clean():
         print("📦 Fetching ALL logs (all users)...")
         df = fetch_all_logs()
         if not df.empty:
@@ -59,8 +58,9 @@ async def refresh_data(background_tasks: BackgroundTasks):
         else:
             print("⚠️ Không có dữ liệu nào trong Supabase.")
 
-    background_tasks.add_task(delayed_clean)
-    return {"message": "Đang chuẩn bị làm sạch toàn bộ dữ liệu..."}
+    # Chạy ngay lập tức ở background, không delay 20s
+    background_tasks.add_task(run_clean)
+    return {"message": "Đang làm sạch toàn bộ dữ liệu..."}
 
 # ================================================================
 # 🔹 Khi user bấm Get Advice → lọc dữ liệu đã clean → gọi Gemini
