@@ -83,6 +83,43 @@ class MoodVM extends ChangeNotifier {
     }
   }
 
+  /// Load toàn bộ dữ liệu của 1 năm trong 1 truy vấn (giảm 12 calls)
+  Future<String?> fetchYear(int year) async {
+    final uid = _sb.auth.currentUser?.id;
+    if (uid == null) return 'Bạn chưa đăng nhập';
+
+    // Không đụng tới _busy để không khoá UI; chỉ báo loading tháng chung
+    _loadingMonth = true;
+    notifyListeners();
+
+    try {
+      final start = DateTime(year, 1, 1);
+      final end = DateTime(year, 12, 31);
+      final res = await _sb
+          .from('moods')
+          .select()
+          .eq('user_id', uid)
+          .gte('day', _normalize(start).toIso8601String())
+          .lte('day', _normalize(end).toIso8601String())
+          .order('day');
+
+      // Gỡ cache của năm để tránh rác
+      _byDay.removeWhere((k, _) => k.year == year);
+
+      for (final row in (res as List)) {
+        final m = Mood.fromJson(row as Map<String, dynamic>);
+        _byDay[_normalize(m.day)] = m;
+      }
+      notifyListeners();
+      return null;
+    } catch (e) {
+      return e.toString();
+    } finally {
+      _loadingMonth = false;
+      notifyListeners();
+    }
+  }
+
   Future<String?> upsertDay({
     required DateTime day,
     required Emotion5 emotion,

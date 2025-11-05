@@ -439,7 +439,11 @@ class _MainEmotionIcon extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
             padding: const EdgeInsets.all(10),
-            child: Image.asset(emotion.assetPath, fit: BoxFit.contain),
+            child: Image.asset(
+              emotion.assetPath,
+              fit: BoxFit.contain,
+              cacheWidth: 48,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
@@ -536,7 +540,11 @@ class _IconGrid<T> extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(10),
-                  child: Image.asset(assetOf(it), fit: BoxFit.contain),
+                  child: Image.asset(
+                    assetOf(it),
+                    fit: BoxFit.contain,
+                    cacheWidth: 48,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(

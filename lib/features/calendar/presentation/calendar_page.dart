@@ -81,7 +81,12 @@ class _CalendarPageState extends State<CalendarPage> {
       child: hasMood
           ? Padding(
               padding: const EdgeInsets.all(6),
-              child: Image.asset(emotion.assetPath, fit: BoxFit.contain),
+              child: Image.asset(
+                emotion.assetPath,
+                fit: BoxFit.contain,
+                // giảm chi phí decode: kích thước icon trong ô ~ 30-36px
+                cacheWidth: 40,
+              ),
             )
           : null,
     );
@@ -389,6 +394,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               child: Image.asset(
                                 e.assetPath,
                                 fit: BoxFit.contain,
+                                cacheWidth: 40,
                               ),
                             ),
                             const SizedBox(width: 8),

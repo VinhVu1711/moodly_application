@@ -69,15 +69,14 @@ class _StatsBodyState extends State<_StatsBody> {
     final month = context.select<StatsVM, DateTime>((vm) => vm.selectedMonth);
     final year = context.select<StatsVM, int>((vm) => vm.selectedYear);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final mood = context.read<MoodVM>();
       if (scope == StatsScope.month) {
-        mood.ensureMonthLoaded(month.year, month.month);
+        await mood.ensureMonthLoaded(month.year, month.month);
       } else {
-        for (int m = 1; m <= 12; m++) {
-          mood.ensureMonthLoaded(year, m);
-        }
+        // Tải cả năm trong 1 call để tránh 12 request đồng thời gây lag
+        await mood.fetchYear(year);
       }
     });
 
