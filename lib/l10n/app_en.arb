@@ -435,5 +435,21 @@
   "confirm_delete_msg": "This action cannot be undone.",
   "@confirm_delete_msg": {
     "description": "label"
+  },
+  "emotional_ai_title": "AI Emotional Summary",
+  "@emotional_ai_title": {
+    "description": "label"
+  },
+  "select_mode_title": "Select mode: ",
+  "@select_mode_title": {
+    "description": "label"
+  },
+  "week_title_ai": "Week",
+  "@week_title_ai": {
+    "description": "label"
+  },
+  "get_advice_button": "Get advice",
+  "@get_advice_button": {
+    "description": "label"
   }
 }

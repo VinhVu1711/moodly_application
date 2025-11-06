@@ -342,4 +342,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm_delete_msg => 'This action cannot be undone.';
+
+  @override
+  String get emotional_ai_title => 'AI Emotional Summary';
+
+  @override
+  String get select_mode_title => 'Select mode: ';
+
+  @override
+  String get week_title_ai => 'Week';
+
+  @override
+  String get get_advice_button => 'Get advice';
 }

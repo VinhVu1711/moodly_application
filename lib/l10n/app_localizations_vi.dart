@@ -341,4 +341,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get confirm_delete_msg => 'Thao tác này không thể thực hiện lại';
+
+  @override
+  String get emotional_ai_title => 'Tổng hợp cảm xúc AI';
+
+  @override
+  String get select_mode_title => 'Chọn chế độ: ';
+
+  @override
+  String get week_title_ai => 'Tuần';
+
+  @override
+  String get get_advice_button => 'Nhận lời khuyên';
 }

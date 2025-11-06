@@ -2,7 +2,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:moodlyy_application/common/l10n_etx.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
 
 class AiPage extends StatefulWidget {
   const AiPage({Key? key}) : super(key: key);
@@ -15,10 +18,66 @@ class _AiPageState extends State<AiPage> {
   String mode = 'week';
   String month = '';
   String year = '';
-  String language = 'vn'; // ✅ Ngôn ngữ đầu ra
   bool loading = false;
   String? adviceText;
   Map<String, dynamic>? result;
+  final _monthKey = GlobalKey<FormFieldState>();
+  final _yearKey = GlobalKey<FormFieldState>();
+
+  /// Validate month and year inputs
+  String? _validateMonth(String? value) {
+    if (mode == 'month') {
+      if (value == null || value.isEmpty) {
+        return 'Month is required';
+      }
+      final monthInt = int.tryParse(value);
+      if (monthInt == null) {
+        return 'Month must be a number';
+      }
+      if (monthInt < 1 || monthInt > 12) {
+        return 'Month must be between 1 and 12';
+      }
+    }
+    return null;
+  }
+
+  String? _validateYear(String? value) {
+    if (mode == 'month' || mode == 'year') {
+      if (value == null || value.isEmpty) {
+        return 'Year is required';
+      }
+      final yearInt = int.tryParse(value);
+      if (yearInt == null) {
+        return 'Year must be a number';
+      }
+      final currentYear = DateTime.now().year;
+      final minYear = currentYear - 5;
+      if (yearInt > currentYear) {
+        return 'Year cannot be in the future';
+      }
+      if (yearInt < minYear) {
+        return 'Year must be within the last 5 years';
+      }
+    }
+    return null;
+  }
+
+  /// Check if all inputs are valid based on current mode
+  bool _isInputValid() {
+    if (mode == 'week') {
+      return true; // Week mode doesn't require inputs
+    } else if (mode == 'month') {
+      // Both month and year must be valid
+      return month.isNotEmpty &&
+          year.isNotEmpty &&
+          _validateMonth(month) == null &&
+          _validateYear(year) == null;
+    } else if (mode == 'year') {
+      // Only year must be valid
+      return year.isNotEmpty && _validateYear(year) == null;
+    }
+    return true;
+  }
 
   /// --- GỌI API /get-advice ---
   Future<void> _getAdvice() async {
@@ -30,11 +89,51 @@ class _AiPageState extends State<AiPage> {
       return;
     }
 
+    // Validate inputs before making API call
+    if (mode == 'month') {
+      if (month.isEmpty || _validateMonth(month) != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please enter a valid month (1-12)")),
+        );
+        _monthKey.currentState?.validate();
+        return;
+      }
+      if (year.isEmpty || _validateYear(year) != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Please enter a valid year (not in future, within last 5 years)",
+            ),
+          ),
+        );
+        _yearKey.currentState?.validate();
+        return;
+      }
+    } else if (mode == 'year') {
+      if (year.isEmpty || _validateYear(year) != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Please enter a valid year (not in future, within last 5 years)",
+            ),
+          ),
+        );
+        _yearKey.currentState?.validate();
+        return;
+      }
+    }
+
     setState(() {
       loading = true;
       adviceText = null;
       result = null;
     });
+
+    // Get current language from LocaleVM provider
+    final localeVM = context.read<LocaleVM>();
+    final locale = localeVM.locale;
+    // Map locale language code to backend format: 'vi' -> 'vn', 'en' or null -> 'eng'
+    final String language = locale?.languageCode == 'vi' ? 'vn' : 'eng';
 
     final uri = Uri.parse("http://10.0.2.2:8000/get-advice");
     final payload = {
@@ -93,7 +192,11 @@ class _AiPageState extends State<AiPage> {
         final summary = parsed["summary"]?.toString().trim() ?? "";
         final advice = parsed["advice"]?.toString().trim() ?? "";
         if (summary.isNotEmpty && advice.isNotEmpty) {
-          combinedText = "$summary\n\n💡 Lời khuyên:\n$advice";
+          if (language == 'vn') {
+            combinedText = "$summary\n\n💡 Lời khuyên:\n$advice";
+          } else {
+            combinedText = "$summary\n\n💡 Advice:\n$advice";
+          }
         } else if (summary.isNotEmpty) {
           combinedText = summary;
         } else {
@@ -120,60 +223,100 @@ class _AiPageState extends State<AiPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('AI Emotional Summary')),
+      appBar: AppBar(title: Text(context.l10n.emotional_ai_title)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Select Mode:', style: TextStyle(fontSize: 16)),
+            Text(
+              context.l10n.select_mode_title,
+              style: TextStyle(fontSize: 16),
+            ),
             DropdownButton<String>(
               value: mode,
-              items: const [
-                DropdownMenuItem(value: 'week', child: Text('Week')),
-                DropdownMenuItem(value: 'month', child: Text('Month')),
-                DropdownMenuItem(value: 'year', child: Text('Year')),
+              items: [
+                DropdownMenuItem(
+                  value: 'week',
+                  child: Text(context.l10n.week_title_ai),
+                ),
+                DropdownMenuItem(
+                  value: 'month',
+                  child: Text(context.l10n.month_title),
+                ),
+                DropdownMenuItem(
+                  value: 'year',
+                  child: Text(context.l10n.year_title),
+                ),
               ],
-              onChanged: (v) => setState(() => mode = v ?? 'week'),
+              onChanged: (v) {
+                setState(() {
+                  mode = v ?? 'week';
+                  // Clear inputs when mode changes
+                  if (mode != 'month') month = '';
+                  if (mode != 'month' && mode != 'year') year = '';
+                });
+              },
             ),
             if (mode == 'month') ...[
-              TextField(
-                decoration: const InputDecoration(labelText: 'Month (1–12)'),
-                keyboardType: TextInputType.number,
-                onChanged: (v) => month = v,
-              ),
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Year (e.g. 2025)',
+              TextFormField(
+                key: _monthKey,
+                decoration: InputDecoration(
+                  labelText: context.l10n.month_title,
+                  hintText: '1-12',
                 ),
                 keyboardType: TextInputType.number,
-                onChanged: (v) => year = v,
+                initialValue: month,
+                validator: _validateMonth,
+                onChanged: (v) {
+                  setState(() {
+                    month = v;
+                  });
+                  _monthKey.currentState?.validate();
+                },
+                onSaved: (v) => month = v ?? '',
+              ),
+              TextFormField(
+                key: _yearKey,
+                decoration: InputDecoration(
+                  labelText: context.l10n.year_title,
+                  hintText: '${DateTime.now().year - 5}-${DateTime.now().year}',
+                ),
+                keyboardType: TextInputType.number,
+                initialValue: year,
+                validator: _validateYear,
+                onChanged: (v) {
+                  setState(() {
+                    year = v;
+                  });
+                  _yearKey.currentState?.validate();
+                },
+                onSaved: (v) => year = v ?? '',
               ),
             ],
             if (mode == 'year')
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Year (e.g. 2025)',
+              TextFormField(
+                key: _yearKey,
+                decoration: InputDecoration(
+                  labelText: context.l10n.year_title,
+                  hintText: '${DateTime.now().year - 5}-${DateTime.now().year}',
                 ),
                 keyboardType: TextInputType.number,
-                onChanged: (v) => year = v,
+                initialValue: year,
+                validator: _validateYear,
+                onChanged: (v) {
+                  setState(() {
+                    year = v;
+                  });
+                  _yearKey.currentState?.validate();
+                },
+                onSaved: (v) => year = v ?? '',
               ),
-
-            const SizedBox(height: 12),
-            const Text('Select Language:', style: TextStyle(fontSize: 16)), // ✅
-            DropdownButton<String>(
-              value: language,
-              items: const [
-                DropdownMenuItem(value: 'vn', child: Text('Vietnamese')),
-                DropdownMenuItem(value: 'eng', child: Text('English')),
-              ],
-              onChanged: (v) => setState(() => language = v ?? 'vn'),
-            ),
 
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: loading ? null : _getAdvice,
-              child: const Text('Get Advice'),
+              onPressed: (loading || !_isInputValid()) ? null : _getAdvice,
+              child: Text(context.l10n.get_advice_button),
             ),
             const SizedBox(height: 20),
             if (loading)

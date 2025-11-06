@@ -676,6 +676,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This action cannot be undone.'**
   String get confirm_delete_msg;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'AI Emotional Summary'**
+  String get emotional_ai_title;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Select mode: '**
+  String get select_mode_title;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get week_title_ai;
+
+  /// label
+  ///
+  /// In en, this message translates to:
+  /// **'Get advice'**
+  String get get_advice_button;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

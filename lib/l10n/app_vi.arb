@@ -435,5 +435,21 @@
   "confirm_delete_msg": "Thao tác này không thể thực hiện lại",
   "@confirm_delete_msg": {
     "description": "label"
+  },
+  "emotional_ai_title": "Tổng hợp cảm xúc AI",
+  "@emotional_ai_title": {
+    "description": "label"
+  },
+  "select_mode_title": "Chọn chế độ: ",
+  "@select_mode_title": {
+    "description": "label"
+  },
+  "week_title_ai": "Tuần",
+  "@week_title_ai": {
+    "description": "label"
+  },
+  "get_advice_button": "Nhận lời khuyên",
+  "@get_advice_button": {
+    "description": "label"
   }
 }
