@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:moodlyy_application/common/l10n_etx.dart';
+// import 'package:moodlyy_application/common/l10n_etx.dart';
 import 'package:moodlyy_application/features/user/vm/user_privacy_vm.dart';
+import 'package:moodlyy_application/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class PrivacyPage extends StatelessWidget {
   const PrivacyPage({super.key});
@@ -8,62 +11,159 @@ class PrivacyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<UserPrivacyVM>();
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Privacy Settings')),
+      appBar: AppBar(
+        title: Text(context.l10n.setting_privacy),
+        elevation: 0,
+      ),
       body: vm.loading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+              ),
+            )
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.lock_reset),
-                    label: const Text('Change Password'),
+                  // Header Section
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: colorScheme.outlineVariant.withOpacity(0.5),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.privacy_tip_rounded,
+                          size: 48,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          context.l10n.setting_privacy_title,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Change Password
+                  FilledButton.icon(
+                    icon: const Icon(Icons.lock_reset_rounded),
+                    label: Text(context.l10n.setting_change_password),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                     onPressed: () async {
-                      final newPass = await _askPassword(context);
-                      if (newPass != null) {
+                      final newPass = await _askPasswordDialog(
+                        context,
+                        title: context.l10n.setting_change_password,
+                        hint: context.l10n.hint_new_password,
+                      );
+                      if (newPass != null && newPass.isNotEmpty) {
                         await vm.changePassword(newPass);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Password updated!')),
-                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(context.l10n.msg_password_changed),
+                            ),
+                          );
+                        }
                       }
                     },
                   ),
+
                   const SizedBox(height: 12),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.cleaning_services),
-                    label: const Text('Delete My Data'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+
+                  // Delete Data
+                  FilledButton.icon(
+                    icon: const Icon(Icons.cleaning_services_rounded),
+                    label: Text(context.l10n.setting_delete_data),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colorScheme.tertiary,
+                      foregroundColor: colorScheme.onTertiary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     onPressed: () async {
-                      final pass = await _askPassword(context);
-                      if (pass == null || pass.isEmpty) return;
-                      await vm.deleteUserData(pass);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('All data deleted!')),
+                      final email = vm.userEmail ?? '';
+                      final pass = await _askPasswordDialog(
+                        context,
+                        title: context.l10n.setting_delete_data,
+                        hint: context.l10n.hint_confirm_password(email),
                       );
+                      if (pass != null && pass.isNotEmpty) {
+                        await vm.deleteUserData(pass);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(context.l10n.msg_data_deleted),
+                            ),
+                          );
+                        }
+                      }
                     },
                   ),
 
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.delete_forever),
-                    label: const Text('Delete My Account'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                  const SizedBox(height: 12),
+
+                  // Delete Account
+                  FilledButton.icon(
+                    icon: const Icon(Icons.delete_forever_rounded),
+                    label: Text(context.l10n.setting_delete_account),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colorScheme.error,
+                      foregroundColor: colorScheme.onError,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     onPressed: () async {
-                      final pass = await _askPassword(context);
-                      if (pass == null || pass.isEmpty) return;
-                      final ok = await _confirmDelete(context);
-                      if (ok) {
-                        await vm.deleteAccount(pass);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Account deleted')),
-                          );
+                      final email = vm.userEmail ?? '';
+                      final pass = await _askPasswordDialog(
+                        context,
+                        title: context.l10n.setting_delete_account,
+                        hint: context.l10n.hint_confirm_password(email),
+                      );
+                      if (pass != null && pass.isNotEmpty) {
+                        final ok = await _confirmDialog(
+                          context,
+                          title: context.l10n.confirm_delete_title,
+                          message: context.l10n.confirm_delete_msg,
+                        );
+                        if (ok) {
+                          await vm.deleteAccount(pass);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(context.l10n.msg_account_deleted),
+                              ),
+                            );
+                          }
                         }
                       }
                     },
@@ -74,45 +174,94 @@ class PrivacyPage extends StatelessWidget {
     );
   }
 
-  Future<String?> _askPassword(BuildContext context) async {
+  Future<String?> _askPasswordDialog(
+    BuildContext context, {
+    required String title,
+    required String hint,
+  }) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final t = AppLocalizations.of(context)!;
     final controller = TextEditingController();
+
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Enter new password'),
+        backgroundColor: colorScheme.surface,
+        title: Text(
+          title,
+          style: TextStyle(color: colorScheme.onSurface),
+        ),
         content: TextField(
           controller: controller,
           obscureText: true,
-          decoration: const InputDecoration(hintText: 'New password'),
+          style: TextStyle(color: colorScheme.onSurface),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+            filled: true,
+            fillColor: colorScheme.surfaceContainerHighest,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colorScheme.outline),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colorScheme.primary, width: 2),
+            ),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(t.btn_cancel),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text),
-            child: const Text('OK'),
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+            ),
+            child: Text(t.btn_ok),
           ),
         ],
       ),
     );
   }
 
-  Future<bool> _confirmDelete(BuildContext context) async {
+  Future<bool> _confirmDialog(
+    BuildContext context, {
+    required String title,
+    required String message,
+  }) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final t = AppLocalizations.of(context)!;
+
     return await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Delete account?'),
-            content: const Text('This action cannot be undone!'),
+            backgroundColor: colorScheme.surface,
+            title: Text(
+              title,
+              style: TextStyle(color: colorScheme.onSurface),
+            ),
+            content: Text(
+              message,
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancel'),
+                child: Text(t.btn_cancel),
               ),
-              TextButton(
+              FilledButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Delete'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: colorScheme.error,
+                  foregroundColor: colorScheme.onError,
+                ),
+                child: Text(t.setting_delete_account),
               ),
             ],
           ),

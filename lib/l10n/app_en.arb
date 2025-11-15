@@ -451,5 +451,51 @@
   "get_advice_button": "Get advice",
   "@get_advice_button": {
     "description": "label"
+  },
+  "ai_error_connection_timeout": "Connection timeout. Please try again later.",
+  "@ai_error_connection_timeout": {
+    "description": "Error message when connection timeout"
+  },
+  "ai_error_server_unavailable": "Cannot connect to server. Please check if backend is running.",
+  "@ai_error_server_unavailable": {
+    "description": "Error message when server is unavailable"
+  },
+  "ai_error_network": "Network error. Please check your internet connection.",
+  "@ai_error_network": {
+    "description": "Error message for network errors"
+  },
+  "ai_error_server": "Server error: {statusCode}",
+  "@ai_error_server": {
+    "description": "Error message for server errors",
+    "placeholders": {
+      "statusCode": {
+        "type": "int",
+        "example": "500"
+      }
+    }
+  },
+  "ai_error_unknown": "An unknown error occurred. Please try again.",
+  "@ai_error_unknown": {
+    "description": "Error message for unknown errors"
+  },
+  "theme_language": "Theme, Language",
+  "@theme_language": {
+    "description": ""
+  },
+  "current_setting": "Current settings",
+  "@current_setting": {
+    "description": ""
+  },
+  "current_setting_subtitle": "Your current preferences",
+  "@current_setting_subtitle": {
+    "description": ""
+  },
+  "change_setting": "Change setting",
+  "@change_setting": {
+    "description": ""
+  },
+  "change_setting_title": "Tap to modify your preferences",
+  "@change_setting_title": {
+    "description": ""
   }
 }

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moodlyy_application/common/l10n_etx.dart';
-import 'package:moodlyy_application/features/user/vm/user_privacy_vm.dart';
+// import 'package:moodlyy_application/common/l10n_etx.dart';
 import 'package:provider/provider.dart';
 
 import 'package:moodlyy_application/features/auth/vm/auth_vm.dart';
 // i18n
-import 'package:moodlyy_application/l10n/app_localizations.dart';
+// import 'package:moodlyy_application/l10n/app_localizations.dart';
 
 // Locale Provider
-import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
-// NEW: Theme Provider
-import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
-
-// NEW: Notification VM
+// import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
+// // Theme Provider
+// import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -21,7 +20,6 @@ class UserPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final t = AppLocalizations.of(context)!;
 
     // Lấy email thật từ AuthVM nếu có
     final email = context.select<AuthVM, String?>((vm) => vm.user?.email);
@@ -56,7 +54,7 @@ class UserPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                t.user_header_title,
+                context.l10n.user_header_title,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
@@ -77,7 +75,7 @@ class UserPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 child: Text(
-                  t.section_account_info,
+                  context.l10n.section_account_info,
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -90,16 +88,88 @@ class UserPage extends StatelessWidget {
               _buildInfoCard(
                 context: context,
                 icon: Icons.email_rounded,
-                title: t.field_email,
+                title: context.l10n.field_email,
                 subtitle: email ?? '—',
               ),
 
               const SizedBox(height: 24),
 
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              //   child: Text(
+              //     t.section_settings,
+              //     style: theme.textTheme.titleSmall?.copyWith(
+              //       color: theme.colorScheme.primary,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 8),
+
+              // Current Settings Display Section
+              // Container(
+              //   padding: const EdgeInsets.all(16),
+              //   decoration: BoxDecoration(
+              //     color: theme.colorScheme.primaryContainer.withOpacity(0.2),
+              //     borderRadius: BorderRadius.circular(16),
+              //     border: Border.all(
+              //       color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+              //       width: 1,
+              //     ),
+              //   ),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       Row(
+              //         children: [
+              //           Icon(
+              //             Icons.settings_rounded,
+              //             color: theme.colorScheme.primary,
+              //             size: 20,
+              //           ),
+              //           const SizedBox(width: 8),
+              //           Text(
+              //             'Current Settings',
+              //             style: theme.textTheme.titleSmall?.copyWith(
+              //               color: theme.colorScheme.primary,
+              //               fontWeight: FontWeight.bold,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //       const SizedBox(height: 12),
+              //       Row(
+              //         children: [
+              //           Expanded(
+              //             child: _buildCurrentSettingChip(
+              //               context: context,
+              //               icon: Icons.language_rounded,
+              //               label: context.watch<LocaleVM>().displayName(),
+              //               color: theme.colorScheme.primaryContainer,
+              //             ),
+              //           ),
+              //           const SizedBox(width: 8),
+              //           Expanded(
+              //             child: _buildCurrentSettingChip(
+              //               context: context,
+              //               icon: Icons.brightness_6_rounded,
+              //               label: context.watch<ThemeVM>().displayName(context),
+              //               color: theme.colorScheme.secondaryContainer,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ],
+              //   ),
+              // ),
+
+              // const SizedBox(height: 24),
+
+              // Settings Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 child: Text(
-                  t.section_settings,
+                  context.l10n.section_settings,
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -108,81 +178,58 @@ class UserPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // Language
+              // Settings
               _buildSettingCard(
                 context: context,
-                icon: Icons.language_rounded,
-                title: t.setting_language,
-                subtitle: context.watch<LocaleVM>().displayName(),
-                onTap: () => _showLanguageSheet(context),
+                icon: Icons.settings_rounded,
+                title: context.l10n.section_settings,
+                subtitle: context.l10n.theme_language,
+                onTap: () => context.push('/settings'),
               ),
               const SizedBox(height: 12),
 
-              // Theme
-              _buildSettingCard(
-                context: context,
-                icon: Icons.brightness_6_rounded,
-                title: t.setting_theme,
-                // NEW: hiển thị theo ThemeVM
-                subtitle: context.watch<ThemeVM>().displayName(context),
-                onTap: () => _showThemeSheet(context), // NEW
-              ),
-              const SizedBox(height: 12),
-
-              // Fix sau, khong thong bao duoc
-              // _buildSettingCard(
-              //   context: context,
-              //   icon: Icons.notifications_rounded,
-              //   title: t.setting_notifications,
-              //   subtitle: t.setting_notifications,
-              //   onTap: () => _showNotificationSheet(context),
-              // ),
-              // const SizedBox(height: 12),
+              // Privacy
               _buildSettingCard(
                 context: context,
                 icon: Icons.privacy_tip_rounded,
-                title: t.setting_privacy,
-                subtitle: t.setting_privacy_title,
-                onTap: () => _showPrivacySheet(context),
+                title: context.l10n.setting_privacy,
+                subtitle: context.l10n.setting_privacy_title,
+                onTap: () => context.push('/privacy'),
               ),
 
               const SizedBox(height: 24),
 
               // About Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Text(
-                  t.section_about,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              //   child: Text(
+              //     context.l10n.section_about,
+              //     style: theme.textTheme.titleSmall?.copyWith(
+              //       color: theme.colorScheme.primary,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 8),
 
-              _buildSettingCard(
-                context: context,
-                icon: Icons.info_rounded,
-                title: t.about_app_info,
-                subtitle: t.about_version('1.0.0'),
-                onTap: () {
-                  // TODO: show app info
-                },
-              ),
-              const SizedBox(height: 12),
+              // _buildSettingCard(
+              //   context: context,
+              //   icon: Icons.info_rounded,
+              //   title: context.l10n.about_app_info,
+              //   subtitle: context.l10n.about_version('1.0.0'),
+              //   onTap: () => context.push('/about'),
+              // ),
+              // const SizedBox(height: 12),
 
-              _buildSettingCard(
-                context: context,
-                icon: Icons.help_rounded,
-                title: t.about_help,
-                subtitle: '—',
-                onTap: () {
-                  // TODO: open help center
-                },
-              ),
+              // _buildSettingCard(
+              //   context: context,
+              //   icon: Icons.help_rounded,
+              //   title: context.l10n.about_help,
+              //   subtitle: 'Support & Help',
+              //   onTap: () => context.push('/about'),
+              // ),
 
-              const SizedBox(height: 32),
+              // const SizedBox(height: 32),
 
               // Logout Button
               Container(
@@ -210,19 +257,19 @@ class UserPage extends StatelessWidget {
                       final shouldLogout = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Text(t.logout_confirm_title),
-                          content: Text(t.logout_confirm_msg),
+                          title: Text(context.l10n.logout_confirm_title),
+                          content: Text(context.l10n.logout_confirm_msg),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
-                              child: Text(t.btn_cancel),
+                              child: Text(context.l10n.btn_cancel),
                             ),
                             FilledButton(
                               onPressed: () => Navigator.pop(context, true),
                               style: FilledButton.styleFrom(
                                 backgroundColor: Colors.red,
                               ),
-                              child: Text(t.btn_ok),
+                              child: Text(context.l10n.btn_ok),
                             ),
                           ],
                         ),
@@ -243,7 +290,7 @@ class UserPage extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            t.logout,
+                            context.l10n.logout,
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -264,90 +311,48 @@ class UserPage extends StatelessWidget {
     );
   }
 
-  // Bottom sheet chọn ngôn ngữ
-  Future<void> _showLanguageSheet(BuildContext context) async {
-    final t = AppLocalizations.of(context)!;
-    await showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.flag),
-              title: Text(t.setting_language_vi),
-              onTap: () {
-                context.read<LocaleVM>().setLocale(const Locale('vi'));
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.flag_outlined),
-              title: Text(t.setting_language_en),
-              onTap: () {
-                context.read<LocaleVM>().setLocale(const Locale('en'));
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildCurrentSettingChip({
+  //   required BuildContext context,
+  //   required IconData icon,
+  //   required String label,
+  //   required Color color,
+  // }) {
+  //   final theme = Theme.of(context);
+  //   final colorScheme = theme.colorScheme;
 
-  // NEW: Bottom sheet chọn theme
-  Future<void> _showThemeSheet(BuildContext context) async {
-    final themeVM = context.read<ThemeVM>();
-
-    await showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.settings_suggest_rounded),
-              title: Text(ctx.l10n.setting_theme_system),
-              onTap: () {
-                themeVM.setMode(ThemeMode.system);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.light_mode_rounded),
-              title: Text(
-                ctx.l10n.setting_theme_light,
-              ),
-              onTap: () {
-                themeVM.setMode(ThemeMode.light);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.dark_mode_rounded),
-              title: Text(
-                ctx.l10n.setting_theme_dark,
-              ),
-              onTap: () {
-                themeVM.setMode(ThemeMode.dark);
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
+  //   return Container(
+  //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  //     decoration: BoxDecoration(
+  //       color: color.withOpacity(0.3),
+  //       borderRadius: BorderRadius.circular(12),
+  //       border: Border.all(
+  //         color: colorScheme.outlineVariant.withOpacity(0.3),
+  //         width: 1,
+  //       ),
+  //     ),
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Icon(
+  //           icon,
+  //           size: 16,
+  //           color: colorScheme.primary,
+  //         ),
+  //         const SizedBox(width: 6),
+  //         Flexible(
+  //           child: Text(
+  //             label,
+  //             style: theme.textTheme.bodySmall?.copyWith(
+  //               color: colorScheme.primary,
+  //               fontWeight: FontWeight.w500,
+  //             ),
+  //             overflow: TextOverflow.ellipsis,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // NEW: Bottom sheet cài đặt Notification (Quote 08:00, Streak 20:00)
   // Future<void> _showNotificationSheet(BuildContext context) async {
@@ -483,184 +488,6 @@ class UserPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _showPrivacySheet(BuildContext context) async {
-    final vm = context.read<UserPrivacyVM>();
-    final t = AppLocalizations.of(context)!;
-    final email = vm.userEmail ?? '';
-
-    await showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: SingleChildScrollView(
-          // ✅ thêm dòng này
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(
-              ctx,
-            ).viewInsets.bottom, // ✅ tránh bị che bởi bàn phím
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  t.setting_privacy_title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.lock_reset_rounded),
-                  label: Text(t.setting_change_password),
-                  onPressed: () async {
-                    Navigator.pop(ctx);
-                    final newPass = await _askPasswordDialog(
-                      context,
-                      title: t.setting_change_password,
-                      hint: t.hint_new_password,
-                    );
-                    if (newPass != null && newPass.isNotEmpty) {
-                      await vm.changePassword(newPass);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(t.msg_password_changed)),
-                        );
-                      }
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 12),
-
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.cleaning_services_rounded),
-                  label: Text(t.setting_delete_data),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                  ),
-                  onPressed: () async {
-                    Navigator.pop(ctx);
-                    final pass = await _askPasswordDialog(
-                      context,
-                      title: t.setting_delete_data,
-                      hint: t.hint_confirm_password(email),
-                    );
-                    if (pass != null && pass.isNotEmpty) {
-                      await vm.deleteUserData(pass);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(t.msg_data_deleted)),
-                        );
-                      }
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 12),
-
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.delete_forever_rounded),
-                  label: Text(t.setting_delete_account),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  onPressed: () async {
-                    Navigator.pop(ctx);
-                    final pass = await _askPasswordDialog(
-                      context,
-                      title: t.setting_delete_account,
-                      hint: t.hint_confirm_password(email),
-                    );
-                    if (pass != null && pass.isNotEmpty) {
-                      final ok = await _confirmDialog(
-                        context,
-                        title: t.confirm_delete_title,
-                        message: t.confirm_delete_msg,
-                      );
-                      if (ok) {
-                        await vm.deleteAccount(pass);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(t.msg_account_deleted)),
-                          );
-                        }
-                      }
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 12),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Dialog nhập mật khẩu hoặc mật khẩu mới
-  Future<String?> _askPasswordDialog(
-    BuildContext context, {
-    required String title,
-    required String hint,
-  }) async {
-    final controller = TextEditingController();
-    return showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          obscureText: true,
-          decoration: InputDecoration(hintText: hint),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, controller.text),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Dialog xác nhận hành động (xóa tài khoản)
-  Future<bool> _confirmDialog(
-    BuildContext context, {
-    required String title,
-    required String message,
-  }) async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(title),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Delete'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
   }
 
   // Interactive setting card with onTap functionality

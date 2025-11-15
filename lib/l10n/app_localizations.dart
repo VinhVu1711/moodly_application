@@ -700,6 +700,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get advice'**
   String get get_advice_button;
+
+  /// Error message when connection timeout
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timeout. Please try again later.'**
+  String get ai_error_connection_timeout;
+
+  /// Error message when server is unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot connect to server. Please check if backend is running.'**
+  String get ai_error_server_unavailable;
+
+  /// Error message for network errors
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your internet connection.'**
+  String get ai_error_network;
+
+  /// Error message for server errors
+  ///
+  /// In en, this message translates to:
+  /// **'Server error: {statusCode}'**
+  String ai_error_server(int statusCode);
+
+  /// Error message for unknown errors
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown error occurred. Please try again.'**
+  String get ai_error_unknown;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Theme, Language'**
+  String get theme_language;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Current settings'**
+  String get current_setting;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Your current preferences'**
+  String get current_setting_subtitle;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Change setting'**
+  String get change_setting;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to modify your preferences'**
+  String get change_setting_title;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

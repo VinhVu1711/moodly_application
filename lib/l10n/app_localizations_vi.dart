@@ -353,4 +353,36 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get get_advice_button => 'Nhận lời khuyên';
+
+  @override
+  String get ai_error_connection_timeout => 'Kết nối quá lâu. Vui lòng thử lại sau.';
+
+  @override
+  String get ai_error_server_unavailable => 'Không thể kết nối đến server. Vui lòng kiểm tra backend đã chạy chưa.';
+
+  @override
+  String get ai_error_network => 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet.';
+
+  @override
+  String ai_error_server(int statusCode) {
+    return 'Lỗi từ server: $statusCode';
+  }
+
+  @override
+  String get ai_error_unknown => 'Đã xảy ra lỗi không xác định. Vui lòng thử lại.';
+
+  @override
+  String get theme_language => 'Giao diện, ngôn ngữ';
+
+  @override
+  String get current_setting => 'Cài đặt hiện tại';
+
+  @override
+  String get current_setting_subtitle => 'Cấu hình hiện tại của bạn';
+
+  @override
+  String get change_setting => 'Chỉnh sửa cài đặt';
+
+  @override
+  String get change_setting_title => 'Bấm vào để cấu hình cài đặt của bạn';
 }

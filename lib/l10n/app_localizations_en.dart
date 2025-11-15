@@ -354,4 +354,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get get_advice_button => 'Get advice';
+
+  @override
+  String get ai_error_connection_timeout => 'Connection timeout. Please try again later.';
+
+  @override
+  String get ai_error_server_unavailable => 'Cannot connect to server. Please check if backend is running.';
+
+  @override
+  String get ai_error_network => 'Network error. Please check your internet connection.';
+
+  @override
+  String ai_error_server(int statusCode) {
+    return 'Server error: $statusCode';
+  }
+
+  @override
+  String get ai_error_unknown => 'An unknown error occurred. Please try again.';
+
+  @override
+  String get theme_language => 'Theme, Language';
+
+  @override
+  String get current_setting => 'Current settings';
+
+  @override
+  String get current_setting_subtitle => 'Your current preferences';
+
+  @override
+  String get change_setting => 'Change setting';
+
+  @override
+  String get change_setting_title => 'Tap to modify your preferences';
 }

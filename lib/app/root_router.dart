@@ -13,6 +13,9 @@ import 'package:moodlyy_application/features/auth/presentation/pages/login_page.
 import 'package:moodlyy_application/features/main_shell/presentation/app_shell.dart';
 import 'package:moodlyy_application/features/auth/data/auth_service.dart';
 import 'package:moodlyy_application/features/onboarding/presentation/intro_splash_page.dart';
+import 'package:moodlyy_application/features/user/presentation/settings_page.dart';
+import 'package:moodlyy_application/features/user/presentation/privacy_page.dart';
+import 'package:moodlyy_application/features/user/presentation/about_page.dart';
 
 // NEW: i18n + LocaleVM
 import 'package:moodlyy_application/l10n/app_localizations.dart';
@@ -158,6 +161,20 @@ class _RootRouterState extends State<RootRouter> {
           path: '/mood/new',
           builder: (_, state) =>
               MoodEditPage(day: (state.extra as DateTime?) ?? DateTime.now()),
+        ),
+
+        // User Settings Routes
+        GoRoute(
+          path: '/settings',
+          builder: (_, __) => const SettingsPage(),
+        ),
+        GoRoute(
+          path: '/privacy',
+          builder: (_, __) => const PrivacyPage(),
+        ),
+        GoRoute(
+          path: '/about',
+          builder: (_, __) => const AboutPage(),
         ),
       ],
       redirect: (ctx, state) {
