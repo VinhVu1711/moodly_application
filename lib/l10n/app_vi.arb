@@ -497,5 +497,41 @@
   "change_setting_title": "Bấm vào để cấu hình cài đặt của bạn",
   "@change_setting_title": {
     "description": ""
+  },
+  "journal_title": "Nhật ký",
+  "@journal_title": {
+    "description": "Tiêu đề của tính năng nhật ký"
+  },
+  "journal_subtitle": "Ghi lại điều bạn muốn ghi nhớ",
+  "@journal_subtitle": {
+    "description": "Phụ đề cho mục truy cập nhật ký"
+  },
+  "journal_hint": "Hãy viết bất cứ điều gì bạn muốn chia sẻ...",
+  "@journal_hint": {
+    "description": "Placeholder cho ô nhập nhật ký"
+  },
+  "journal_save": "Lưu nhật ký",
+  "@journal_save": {
+    "description": "Nút lưu nhật ký"
+  },
+  "journal_empty_state": "Chưa có nhật ký nào. Bắt đầu ghi chép nhé!",
+  "@journal_empty_state": {
+    "description": "Thông báo khi danh sách nhật ký trống"
+  },
+  "journal_login_required": "Vui lòng đăng nhập để sử dụng nhật ký.",
+  "@journal_login_required": {
+    "description": "Thông báo khi cần đăng nhập để dùng nhật ký"
+  },
+  "journal_action_edit": "Chỉnh sửa",
+  "@journal_action_edit": {
+    "description": "Hành động chỉnh sửa nhật ký"
+  },
+  "journal_action_delete": "Xóa nhật ký",
+  "@journal_action_delete": {
+    "description": "Hành động xóa nhật ký"
+  },
+  "journal_delete_confirm": "Nhật ký này sẽ bị xóa vĩnh viễn.",
+  "@journal_delete_confirm": {
+    "description": "Thông báo xác nhận xóa nhật ký"
   }
 }

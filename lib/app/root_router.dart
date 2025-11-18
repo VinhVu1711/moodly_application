@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:moodlyy_application/features/mood/vm/mood_vm.dart';
 import 'package:moodlyy_application/features/calendar/vm/calendar_vm.dart';
+import 'package:moodlyy_application/features/journal/vm/journal_vm.dart';
 
 import 'package:moodlyy_application/features/mood/presentation/mood_edit_page.dart';
 import 'package:moodlyy_application/features/auth/presentation/pages/login_page.dart';
@@ -16,6 +17,7 @@ import 'package:moodlyy_application/features/onboarding/presentation/intro_splas
 import 'package:moodlyy_application/features/user/presentation/settings_page.dart';
 import 'package:moodlyy_application/features/user/presentation/privacy_page.dart';
 import 'package:moodlyy_application/features/user/presentation/about_page.dart';
+import 'package:moodlyy_application/features/journal/presentation/journal_page.dart';
 
 // NEW: i18n + LocaleVM
 import 'package:moodlyy_application/l10n/app_localizations.dart';
@@ -65,6 +67,7 @@ class _AuthSessionListenerState extends State<AuthSessionListener> {
         // clear caches data theo account
         context.read<MoodVM>().clearAll();
         context.read<CalendarVM>().clearAll();
+        context.read<JournalVM>().clearAll();
 
         // ⬇️ sync settings theo user hiện tại
         final uid = current?.user.id;
@@ -175,6 +178,10 @@ class _RootRouterState extends State<RootRouter> {
         GoRoute(
           path: '/about',
           builder: (_, __) => const AboutPage(),
+        ),
+        GoRoute(
+          path: '/journal',
+          builder: (_, __) => const JournalPage(),
         ),
       ],
       redirect: (ctx, state) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moodlyy_application/common/l10n_etx.dart';
 import 'package:moodlyy_application/features/app/vm/locale_vm.dart';
 import 'package:moodlyy_application/features/app/vm/theme_vm.dart';
@@ -76,6 +77,16 @@ class SettingsPage extends StatelessWidget {
             title: t.setting_theme,
             subtitle: context.watch<ThemeVM>().displayName(context),
             onTap: () => _showThemeSheet(context),
+          ),
+          const SizedBox(height: 12),
+
+          // Journal
+          _buildSettingCard(
+            context: context,
+            icon: Icons.menu_book_rounded,
+            title: t.journal_title,
+            subtitle: context.l10n.journal_subtitle,
+            onTap: () => context.push('/journal'),
           ),
         ],
       ),

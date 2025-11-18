@@ -497,5 +497,41 @@
   "change_setting_title": "Tap to modify your preferences",
   "@change_setting_title": {
     "description": ""
+  },
+  "journal_title": "Journal",
+  "@journal_title": {
+    "description": "Title for the journal feature"
+  },
+  "journal_subtitle": "Capture any thought or feeling you want to keep",
+  "@journal_subtitle": {
+    "description": "Subtitle for journal entry point"
+  },
+  "journal_hint": "Write anything you want to remember...",
+  "@journal_hint": {
+    "description": "Placeholder for journal text field"
+  },
+  "journal_save": "Save entry",
+  "@journal_save": {
+    "description": "Button label to save journal entry"
+  },
+  "journal_empty_state": "No journal entries yet. Start your first note!",
+  "@journal_empty_state": {
+    "description": "Empty state text for journal list"
+  },
+  "journal_login_required": "Please sign in to write your journal.",
+  "@journal_login_required": {
+    "description": "Message when user must login to use journal"
+  },
+  "journal_action_edit": "Edit entry",
+  "@journal_action_edit": {
+    "description": "Context menu action: edit journal"
+  },
+  "journal_action_delete": "Delete entry",
+  "@journal_action_delete": {
+    "description": "Context menu action: delete journal"
+  },
+  "journal_delete_confirm": "This entry will be permanently removed.",
+  "@journal_delete_confirm": {
+    "description": "Confirmation text before deleting journal"
   }
 }

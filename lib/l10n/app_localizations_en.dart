@@ -386,4 +386,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get change_setting_title => 'Tap to modify your preferences';
+
+  @override
+  String get journal_title => 'Journal';
+
+  @override
+  String get journal_subtitle => 'Capture any thought or feeling you want to keep';
+
+  @override
+  String get journal_hint => 'Write anything you want to remember...';
+
+  @override
+  String get journal_save => 'Save entry';
+
+  @override
+  String get journal_empty_state => 'No journal entries yet. Start your first note!';
+
+  @override
+  String get journal_login_required => 'Please sign in to write your journal.';
+
+  @override
+  String get journal_action_edit => 'Edit entry';
+
+  @override
+  String get journal_action_delete => 'Delete entry';
+
+  @override
+  String get journal_delete_confirm => 'This entry will be permanently removed.';
 }

@@ -760,6 +760,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to modify your preferences'**
   String get change_setting_title;
+
+  /// Title for the journal feature
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get journal_title;
+
+  /// Subtitle for journal entry point
+  ///
+  /// In en, this message translates to:
+  /// **'Capture any thought or feeling you want to keep'**
+  String get journal_subtitle;
+
+  /// Placeholder for journal text field
+  ///
+  /// In en, this message translates to:
+  /// **'Write anything you want to remember...'**
+  String get journal_hint;
+
+  /// Button label to save journal entry
+  ///
+  /// In en, this message translates to:
+  /// **'Save entry'**
+  String get journal_save;
+
+  /// Empty state text for journal list
+  ///
+  /// In en, this message translates to:
+  /// **'No journal entries yet. Start your first note!'**
+  String get journal_empty_state;
+
+  /// Message when user must login to use journal
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to write your journal.'**
+  String get journal_login_required;
+
+  /// Context menu action: edit journal
+  ///
+  /// In en, this message translates to:
+  /// **'Edit entry'**
+  String get journal_action_edit;
+
+  /// Context menu action: delete journal
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry'**
+  String get journal_action_delete;
+
+  /// Confirmation text before deleting journal
+  ///
+  /// In en, this message translates to:
+  /// **'This entry will be permanently removed.'**
+  String get journal_delete_confirm;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

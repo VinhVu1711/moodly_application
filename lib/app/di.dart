@@ -28,6 +28,10 @@ import 'package:moodlyy_application/features/settings/data/user_settings_service
 // NEW: NotificationVM (state bật/tắt notification theo user)
 import 'package:moodlyy_application/features/app/vm/notification_vm.dart';
 
+// Journal feature
+import 'package:moodlyy_application/features/journal/data/journal_service.dart';
+import 'package:moodlyy_application/features/journal/vm/journal_vm.dart';
+
 List<SingleChildWidget> buildProviders() => [
   // 1️⃣ Supabase client
   Provider<SupabaseClient>(create: (_) => Supabase.instance.client),
@@ -41,6 +45,9 @@ List<SingleChildWidget> buildProviders() => [
   ),
   ProxyProvider<SupabaseClient, CalendarService>(
     update: (_, sp, __) => CalendarService(sp),
+  ),
+  ProxyProvider<SupabaseClient, JournalService>(
+    update: (_, sp, __) => JournalService(sp),
   ),
   // ✅ Thêm dòng này — thiếu trong file của em
   ProxyProvider<SupabaseClient, UserPrivacyService>(
@@ -81,6 +88,12 @@ List<SingleChildWidget> buildProviders() => [
     ),
   ),
   ChangeNotifierProvider<MoodVM>(create: (_) => MoodVM()),
+  ChangeNotifierProvider<JournalVM>(
+    create: (ctx) => JournalVM(
+      ctx.read<JournalService>(),
+      ctx.read<AuthService>(),
+    ),
+  ),
 
   ChangeNotifierProxyProvider<MoodVM, StatsVM>(
     create: (_) => StatsVM(),

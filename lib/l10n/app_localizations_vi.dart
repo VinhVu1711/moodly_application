@@ -385,4 +385,31 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get change_setting_title => 'Bấm vào để cấu hình cài đặt của bạn';
+
+  @override
+  String get journal_title => 'Nhật ký';
+
+  @override
+  String get journal_subtitle => 'Ghi lại điều bạn muốn ghi nhớ';
+
+  @override
+  String get journal_hint => 'Hãy viết bất cứ điều gì bạn muốn chia sẻ...';
+
+  @override
+  String get journal_save => 'Lưu nhật ký';
+
+  @override
+  String get journal_empty_state => 'Chưa có nhật ký nào. Bắt đầu ghi chép nhé!';
+
+  @override
+  String get journal_login_required => 'Vui lòng đăng nhập để sử dụng nhật ký.';
+
+  @override
+  String get journal_action_edit => 'Chỉnh sửa';
+
+  @override
+  String get journal_action_delete => 'Xóa nhật ký';
+
+  @override
+  String get journal_delete_confirm => 'Nhật ký này sẽ bị xóa vĩnh viễn.';
 }
