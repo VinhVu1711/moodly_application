@@ -57,6 +57,23 @@ class AuthVM extends ChangeNotifier {
     }
   }
 
+  /// 📧 Quên mật khẩu
+  Future<void> resetPassword(String email) async {
+    loading = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      await _svc.resetPasswordForEmail(email);
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
+  }
+
   /// 🚪 Đăng xuất
   Future<void> signOut() async {
     try {

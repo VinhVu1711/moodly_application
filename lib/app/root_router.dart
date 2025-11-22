@@ -11,6 +11,7 @@ import 'package:moodlyy_application/features/journal/vm/journal_vm.dart';
 
 import 'package:moodlyy_application/features/mood/presentation/mood_edit_page.dart';
 import 'package:moodlyy_application/features/auth/presentation/pages/login_page.dart';
+import 'package:moodlyy_application/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:moodlyy_application/features/main_shell/presentation/app_shell.dart';
 import 'package:moodlyy_application/features/auth/data/auth_service.dart';
 import 'package:moodlyy_application/features/onboarding/presentation/intro_splash_page.dart';
@@ -98,12 +99,29 @@ class RootRouter extends StatefulWidget {
 
 class _RootRouterState extends State<RootRouter> {
   GoRouter? _router;
+  StreamSubscription? _passwordRecoverySub;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Khởi tạo router duy nhất khi lần đầu có AuthService trong context
-    _router ??= _buildRouter(context.read<AuthService>());
+    if (_router == null) {
+      final auth = context.read<AuthService>();
+      _router = _buildRouter(auth);
+      
+      // Listen for password recovery events
+      _passwordRecoverySub = auth.passwordRecoveryEvent$.listen((event) {
+        print('🔑 PASSWORD_RECOVERY event detected! Navigating to /reset-password');
+        // Navigate to reset password page
+        _router!.go('/reset-password');
+      });
+    }
+  }
+  
+  @override
+  void dispose() {
+    _passwordRecoverySub?.cancel();
+    super.dispose();
   }
 
   @override
@@ -150,6 +168,10 @@ class _RootRouterState extends State<RootRouter> {
       routes: [
         GoRoute(path: '/splash', builder: (_, __) => const IntroSplashPage()),
         GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+        GoRoute(
+          path: '/reset-password',
+          builder: (_, __) => const ResetPasswordPage(),
+        ),
 
         // Home (tab Lịch mặc định)
         GoRoute(path: '/', builder: (_, __) => const AppShell()),
@@ -188,9 +210,49 @@ class _RootRouterState extends State<RootRouter> {
         final session = auth.currentSession;
         final atSplash = state.matchedLocation == '/splash';
         final atLogin = state.matchedLocation == '/login';
+        final atResetPassword = state.matchedLocation == '/reset-password';
+
+        // Check if this is a password recovery flow from Supabase
+        final isRecovery = state.uri.queryParameters['type'] == 'recovery';
+
+        print('--- ROUTER DEBUG ---');
+        print('Location: ${state.matchedLocation}');
+        print('Uri: ${state.uri}');
+        print('Uri.path: ${state.uri.path}');
+        print('Uri.host: ${state.uri.host}');
+        print('Query Params: ${state.uri.queryParameters}');
+        print(
+          'Session: ${session != null ? "Active (${session.user.email})" : "Null"}',
+        );
+        print(
+          'AtSplash: $atSplash, AtLogin: $atLogin, AtResetPassword: $atResetPassword',
+        );
+        print('IsRecovery: $isRecovery');
+
+        // Always allow splash screen
         if (atSplash) return null;
+
+        // 🔧 FIX: Handle password recovery FIRST, before other checks
+        if (isRecovery && session != null) {
+          print('Recovery flow detected - redirecting to /reset-password');
+          return '/reset-password';
+        }
+
+        // Allow access to reset-password page when session exists
+        if (atResetPassword && session != null) {
+          print('Allowing access to reset-password page');
+          return null;
+        }
+
+        // No session: redirect to login (except if already at login)
         if (session == null) return atLogin ? null : '/login';
-        if (atLogin) return '/';
+
+        // If logged in and at login page, go home
+        if (atLogin) {
+          print('Redirecting to / because atLogin is true and session exists');
+          return '/';
+        }
+
         return null;
       },
     );

@@ -15,7 +15,7 @@ class _IntroSplashPageState extends State<IntroSplashPage> {
   void initState() {
     super.initState();
     //Xuất hiện trong 1200 mili giây
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 3), () {
       final session = context.read<Session?>();
       if (!mounted) return;
       context.go(session == null ? '/login' : '/'); // chuyển sau 1200ms

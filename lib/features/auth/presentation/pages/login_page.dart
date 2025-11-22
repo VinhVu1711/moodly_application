@@ -200,6 +200,56 @@ class _LoginPageState extends State<LoginPage> {
                             onChanged: (_) =>
                                 context.read<AuthVM>().clearError(),
                           ),
+                          const SizedBox(height: 8),
+
+                          // Forgot Password Button
+                          if (!isSignup)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () async {
+                                  final email = emailCtrl.text.trim();
+                                  if (email.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Vui lòng nhập email trước'),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  await context
+                                      .read<AuthVM>()
+                                      .resetPassword(email);
+                                  if (context.mounted) {
+                                    final error = context.read<AuthVM>().error;
+                                    if (error == null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Đã gửi email đặt lại mật khẩu'),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: colorScheme.primary,
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: const Size(0, 0),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: const Text(
+                                  'Quên mật khẩu?',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
                           const SizedBox(height: 20),
 
                           // Error Message

@@ -12,9 +12,13 @@ class UserPrivacyVM extends ChangeNotifier {
   String? get userId => _client.auth.currentUser?.id;
   String? get userEmail => _client.auth.currentUser?.email;
 
-  Future<void> changePassword(String newPassword) async {
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    if (userEmail == null) return;
     _start();
     try {
+      // 1. Verify old password
+      await _service.reauthenticate(userEmail!, oldPassword);
+      // 2. Update to new password
       await _service.changePassword(newPassword);
     } finally {
       _stop();

@@ -76,19 +76,28 @@ class PrivacyPage extends StatelessWidget {
                       ),
                     ),
                     onPressed: () async {
-                      final newPass = await _askPasswordDialog(
-                        context,
-                        title: context.l10n.setting_change_password,
-                        hint: context.l10n.hint_new_password,
-                      );
-                      if (newPass != null && newPass.isNotEmpty) {
-                        await vm.changePassword(newPass);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(context.l10n.msg_password_changed),
-                            ),
-                          );
+                      final result = await _showChangePasswordDialog(context);
+                      if (result != null) {
+                        final oldPass = result['old']!;
+                        final newPass = result['new']!;
+
+                        try {
+                          await vm.changePassword(oldPass, newPass);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  context.l10n.msg_password_changed,
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Lỗi: $e')),
+                            );
+                          }
                         }
                       }
                     },
@@ -128,46 +137,46 @@ class PrivacyPage extends StatelessWidget {
                     },
                   ),
 
-                  const SizedBox(height: 12),
+                  // const SizedBox(height: 12),
 
-                  // Delete Account
-                  FilledButton.icon(
-                    icon: const Icon(Icons.delete_forever_rounded),
-                    label: Text(context.l10n.setting_delete_account),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: colorScheme.error,
-                      foregroundColor: colorScheme.onError,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () async {
-                      final email = vm.userEmail ?? '';
-                      final pass = await _askPasswordDialog(
-                        context,
-                        title: context.l10n.setting_delete_account,
-                        hint: context.l10n.hint_confirm_password(email),
-                      );
-                      if (pass != null && pass.isNotEmpty) {
-                        final ok = await _confirmDialog(
-                          context,
-                          title: context.l10n.confirm_delete_title,
-                          message: context.l10n.confirm_delete_msg,
-                        );
-                        if (ok) {
-                          await vm.deleteAccount(pass);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(context.l10n.msg_account_deleted),
-                              ),
-                            );
-                          }
-                        }
-                      }
-                    },
-                  ),
+                  // // Delete Account
+                  // FilledButton.icon(
+                  //   icon: const Icon(Icons.delete_forever_rounded),
+                  //   label: Text(context.l10n.setting_delete_account),
+                  //   style: FilledButton.styleFrom(
+                  //     backgroundColor: colorScheme.error,
+                  //     foregroundColor: colorScheme.onError,
+                  //     padding: const EdgeInsets.symmetric(vertical: 16),
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(12),
+                  //     ),
+                  //   ),
+                  //   onPressed: () async {
+                  //     final email = vm.userEmail ?? '';
+                  //     final pass = await _askPasswordDialog(
+                  //       context,
+                  //       title: context.l10n.setting_delete_account,
+                  //       hint: context.l10n.hint_confirm_password(email),
+                  //     );
+                  //     if (pass != null && pass.isNotEmpty) {
+                  //       final ok = await _confirmDialog(
+                  //         context,
+                  //         title: context.l10n.confirm_delete_title,
+                  //         message: context.l10n.confirm_delete_msg,
+                  //       );
+                  //       if (ok) {
+                  //         await vm.deleteAccount(pass);
+                  //         if (context.mounted) {
+                  //           ScaffoldMessenger.of(context).showSnackBar(
+                  //             SnackBar(
+                  //               content: Text(context.l10n.msg_account_deleted),
+                  //             ),
+                  //           );
+                  //         }
+                  //       }
+                  //     }
+                  //   },
+                  // ),
                 ],
               ),
             ),
@@ -267,5 +276,85 @@ class PrivacyPage extends StatelessWidget {
           ),
         ) ??
         false;
+  }
+
+  Future<Map<String, String>?> _showChangePasswordDialog(BuildContext context) {
+    final oldCtrl = TextEditingController();
+    final newCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final t = AppLocalizations.of(context)!;
+
+    return showDialog<Map<String, String>>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colorScheme.surface,
+        title: Text(t.setting_change_password),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: oldCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Mật khẩu cũ',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: newCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Mật khẩu mới',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: confirmCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Xác nhận mật khẩu mới',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(t.btn_cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              final oldPass = oldCtrl.text;
+              final newPass = newCtrl.text;
+              final confirmPass = confirmCtrl.text;
+
+              if (oldPass.isEmpty || newPass.isEmpty || confirmPass.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Vui lòng nhập đầy đủ thông tin'),
+                  ),
+                );
+                return;
+              }
+
+              if (newPass != confirmPass) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Mật khẩu mới không khớp')),
+                );
+                return;
+              }
+
+              Navigator.pop(ctx, {'old': oldPass, 'new': newPass});
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }
