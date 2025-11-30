@@ -47,7 +47,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       await context.read<AuthService>().logout();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đổi mật khẩu thành công! Vui lòng đăng nhập lại')),
+          const SnackBar(
+            content: Text('Đổi mật khẩu thành công! Vui lòng đăng nhập lại'),
+          ),
         );
         // Navigate back to login
         context.go('/login');
@@ -65,43 +67,105 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Đặt lại mật khẩu')),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _passCtrl,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Mật khẩu mới',
-                border: OutlineInputBorder(),
+      appBar: AppBar(
+        title: const Text('Đặt lại mật khẩu'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Icon(
+                Icons.lock_reset,
+                size: 80,
+                color: colorScheme.primary,
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _confirmCtrl,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Xác nhận mật khẩu',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 24),
+              Text(
+                'Tạo mật khẩu mới',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: FilledButton(
-                onPressed: _loading ? null : _submit,
-                child: _loading
-                    ? const CircularProgressIndicator.adaptive()
-                    : const Text('Cập nhật mật khẩu'),
+              const SizedBox(height: 8),
+              Text(
+                'Vui lòng nhập mật khẩu mới của bạn bên dưới.',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const SizedBox(height: 32),
+              TextField(
+                controller: _passCtrl,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Mật khẩu mới',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withOpacity(
+                    0.3,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _confirmCtrl,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Xác nhận mật khẩu',
+                  prefixIcon: const Icon(Icons.lock),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withOpacity(
+                    0.3,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                height: 50,
+                child: FilledButton(
+                  onPressed: _loading ? null : _submit,
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _loading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator.adaptive(
+                            strokeWidth: 2.5,
+                            backgroundColor: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          'Cập nhật mật khẩu',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

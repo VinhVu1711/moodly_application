@@ -21,9 +21,9 @@ void main() async {
   );
   debugPrint('✅ Supabase initialized');
   // 3️⃣ Khởi tạo notification plugin (rất quan trọng)
-  final localNoti = LocalNotificationsPort();
-  await localNoti.init();
-  debugPrint('✅ LocalNotificationsPort initialized');
+  // final localNoti = LocalNotificationsPort();
+  // await localNoti.init();
+  // debugPrint('✅ LocalNotificationsPort initialized');
   // 4️⃣ (Tùy chọn) Test xem có hiện được notification ngay không
 
   // Chạy ứng dụng

@@ -125,13 +125,30 @@ class PrivacyPage extends StatelessWidget {
                         hint: context.l10n.hint_confirm_password(email),
                       );
                       if (pass != null && pass.isNotEmpty) {
-                        await vm.deleteUserData(pass);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(context.l10n.msg_data_deleted),
-                            ),
-                          );
+                        try {
+                          await vm.deleteUserData(pass);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).clearSnackBars();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(context.l10n.msg_data_deleted),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            // Hiển thị lỗi (ví dụ: sai mật khẩu)
+                            ScaffoldMessenger.of(context).clearSnackBars();
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e.toString().replaceAll('Exception: ', ''),
+                                ),
+                                backgroundColor: colorScheme.error,
+                              ),
+                            );
+                          }
                         }
                       }
                     },
@@ -231,52 +248,52 @@ class PrivacyPage extends StatelessWidget {
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
             ),
-            child: Text(t.btn_ok),
+            child: const Text("OK"),
           ),
         ],
       ),
     );
   }
 
-  Future<bool> _confirmDialog(
-    BuildContext context, {
-    required String title,
-    required String message,
-  }) async {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final t = AppLocalizations.of(context)!;
+  // Future<bool> _confirmDialog(
+  //   BuildContext context, {
+  //   required String title,
+  //   required String message,
+  // }) async {
+  //   final theme = Theme.of(context);
+  //   final colorScheme = theme.colorScheme;
+  //   final t = AppLocalizations.of(context)!;
 
-    return await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            backgroundColor: colorScheme.surface,
-            title: Text(
-              title,
-              style: TextStyle(color: colorScheme.onSurface),
-            ),
-            content: Text(
-              message,
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(t.btn_cancel),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                style: FilledButton.styleFrom(
-                  backgroundColor: colorScheme.error,
-                  foregroundColor: colorScheme.onError,
-                ),
-                child: Text(t.setting_delete_account),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-  }
+  //   return await showDialog<bool>(
+  //         context: context,
+  //         builder: (ctx) => AlertDialog(
+  //           backgroundColor: colorScheme.surface,
+  //           title: Text(
+  //             title,
+  //             style: TextStyle(color: colorScheme.onSurface),
+  //           ),
+  //           content: Text(
+  //             message,
+  //             style: TextStyle(color: colorScheme.onSurfaceVariant),
+  //           ),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () => Navigator.pop(ctx, false),
+  //               child: Text(t.btn_cancel),
+  //             ),
+  //             FilledButton(
+  //               onPressed: () => Navigator.pop(ctx, true),
+  //               style: FilledButton.styleFrom(
+  //                 backgroundColor: colorScheme.error,
+  //                 foregroundColor: colorScheme.onError,
+  //               ),
+  //               child: Text(t.setting_delete_account),
+  //             ),
+  //           ],
+  //         ),
+  //       ) ??
+  //       false;
+  // }
 
   Future<Map<String, String>?> _showChangePasswordDialog(BuildContext context) {
     final oldCtrl = TextEditingController();

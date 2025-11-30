@@ -76,10 +76,10 @@ class _AuthSessionListenerState extends State<AuthSessionListener> {
         await context.read<ThemeVM>().onUserChanged(uid);
 
         // ⬇️ sync notification theo user (toàn bộ logic nằm trong VM)
-        final notifVM = context.read<NotificationVM>();
-        if (uid != null) {
-          await notifVM.syncForUser(uid);
-        }
+        // final notifVM = context.read<NotificationVM>();
+        // if (uid != null) {
+        //   await notifVM.syncForUser(uid);
+        // }
       });
       _last = current;
     }

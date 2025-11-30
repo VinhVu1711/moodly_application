@@ -55,9 +55,9 @@ List<SingleChildWidget> buildProviders() => [
   ),
 
   // 3️⃣ NotificationsPort triển khai thật
-  Provider<NotificationsPort>(
-    create: (_) => LocalNotificationsPort()..init(),
-  ),
+  // Provider<NotificationsPort>(
+  //   create: (_) => LocalNotificationsPort()..init(),
+  // ),
 
   // 4️⃣ Streams
   StreamProvider<Session?>(
@@ -78,7 +78,7 @@ List<SingleChildWidget> buildProviders() => [
   ChangeNotifierProvider<NotificationVM>(
     create: (ctx) => NotificationVM(
       ctx.read<UserSettingsService>(),
-      ctx.read<NotificationsPort>(),
+      // ctx.read<NotificationsPort>(), // Disabled notification
     ),
   ),
   ChangeNotifierProvider<CalendarVM>(

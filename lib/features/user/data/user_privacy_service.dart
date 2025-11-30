@@ -26,8 +26,7 @@ class UserPrivacyService {
   /// 🧹 Xóa dữ liệu cá nhân
   Future<void> deleteUserData(String userId) async {
     await _client.from('moods').delete().eq('user_id', userId);
-    await _client.from('calendar').delete().eq('user_id', userId);
-    await _client.from('stats').delete().eq('user_id', userId);
+    await _client.from('journal').delete().eq('user_id', userId);
   }
 
   /// ❌ Xóa tài khoản sau khi reauthenticate

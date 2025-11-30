@@ -191,6 +191,7 @@ class _StatsBody extends StatefulWidget {
     required this.flowCtrl,
     required this.barCtrl,
     required this.totalCtrl,
+    // ignore: unused_element_parameter
     super.key,
   });
 
